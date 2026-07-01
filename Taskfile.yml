@@ -178,7 +178,8 @@ tasks:
     cmds:
       - |
         [ -f {{.REDOCLY}} ] || {
-          npm ci
+          echo "📦 Устанавливаем redocly-cli..."
+          npm i @redocly/cli@latest
         }
 
   redocly-cli:order-v1-bundle:
@@ -204,7 +205,7 @@ tasks:
 
   ogen:gen:
     desc: "Генерация Go-кода из всех OpenAPI-деклараций с x-ogen"
-    deps: [ ogen:install, yq:install ]
+    deps: [ ogen:install, yq:install, redocly-cli:install ]
     cmds:
       - task: redocly-cli:bundle
       - |
