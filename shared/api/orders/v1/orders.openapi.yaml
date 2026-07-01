@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  title: OrdersService API
+  version: 1.0.0
+  description:  Api Для работы с заказами
+
+x-ogen:
+  target: ./shared/pkg/openapi/orders/v1
+  package: orders_v1
+  clean: true
+
+paths:
+  /api/v1/orders:
+    post:
+      summary: Creates new order with selected details
+      operationId: CreateNewOrder
+      tags: [orders, order]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "./components/create_order_request.yaml"
+      responses:
+        '201':
+          description: Weather information successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: ./components/order.yaml
+  /api/v1/orders/{order_uuid}:
+   $ref: "./paths/order_by_uuid.yaml"

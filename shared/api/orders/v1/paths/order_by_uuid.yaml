@@ -1,0 +1,13 @@
+parameters:
+  - $ref: "../params/uuid.yaml"
+get:
+  summary: Creates new order with selected details
+  operationId: CreateNewOrder
+  tags: [ orders, order ]
+  responses:
+    '200':
+      description: Weather information successfully retrieved
+      content:
+        application/json:
+          schema:
+            $ref: "../components/order.yaml"

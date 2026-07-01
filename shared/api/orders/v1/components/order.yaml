@@ -1,0 +1,38 @@
+type: object
+required:
+#  - city
+#  - temperature
+#  - updated_at
+properties:
+  order_uuid:
+    type: string
+    description: Order ID
+    minLength: 1
+    maxLength: 100
+    example: "Moscow"
+  user_uuid:
+    type: string
+    description: User ID
+    example: "user_uuid"
+  part_uuids:
+    type: array
+    description: Parts Id array
+    items:
+      type: string
+      example: "part_uuid"
+  total_price:
+    description: Total price
+    type: number
+    example: 123.45
+  transaction_uuid:
+    description: User ID
+    type: string
+    example: "transaction_uuid"
+  payment_method:
+    type: string
+    description: Payment method
+    example: "CARD"
+  status:
+    type: string
+    description: Order status
+    example: "PAID"

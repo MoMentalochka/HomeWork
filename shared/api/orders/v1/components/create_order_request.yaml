@@ -1,0 +1,21 @@
+type: object
+required:
+#  - city
+#  - temperature
+#  - updated_at
+properties:
+  user_uuid:
+    type: string
+    description: user ID
+    minLength: 1
+    maxLength: 100
+    example: "user_uuid"
+  part_uuids:
+    type: array
+    description: Parts ID array
+    items:
+      type: string
+      description: Part ID
+      minLength: 1
+      maxLength: 100
+      example: "part_uuids"
