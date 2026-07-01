@@ -27,6 +27,8 @@ go.work.sum
 # env file
 .env
 .idea
+node_modules
+package-lock.json
 # Editor/IDE
 # .idea/
 # .vscode/
