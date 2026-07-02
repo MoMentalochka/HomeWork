@@ -3,6 +3,4 @@ required:
   - payment_method
 properties:
   payment_method:
-    type: string
-    description: Payment method
-    example: "CARD"
+    $ref: "../enums/payment_method_enum.yaml"

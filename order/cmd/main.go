@@ -27,23 +27,23 @@ const (
 
 type OrderStore struct {
 	mu     sync.Mutex
-	orders map[string]*ordersv1.Order
+	orders map[string]*ordersv1.OrderDto
 }
 
 func NewOrderStore() *OrderStore {
 	return &OrderStore{
-		orders: make(map[string]*ordersv1.Order),
+		orders: make(map[string]*ordersv1.OrderDto),
 	}
 }
 
-func (s *OrderStore) AddOrder(order *ordersv1.Order) {
+func (s *OrderStore) AddOrder(order *ordersv1.OrderDto) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	s.orders[order.OrderUUID] = order
 }
 
-func (s *OrderStore) GetOrder(id string) *ordersv1.Order {
+func (s *OrderStore) GetOrder(id string) *ordersv1.OrderDto {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -66,11 +66,11 @@ func NewOrderHandler(store *OrderStore) *OrderHandler {
 }
 
 func (h *OrderHandler) CreateNewOrder(_ context.Context, req *ordersv1.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error) {
-	order := &ordersv1.Order{
+	order := &ordersv1.OrderDto{
 		OrderUUID: uuid.New().String(),
 		PartUuids: req.PartUuids,
 		UserUUID:  req.UserUUID,
-		Status:    ordersv1.OrderStatusPENDINGPAYMENT,
+		Status:    ordersv1.StatusEnumPENDINGPAYMENT,
 	}
 
 	h.store.AddOrder(order)

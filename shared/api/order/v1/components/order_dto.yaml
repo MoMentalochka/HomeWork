@@ -31,19 +31,6 @@ properties:
     type: string
     example: "transaction_uuid"
   payment_method:
-    type: string
-    description: Payment method
-    example: "CARD"
-    enum:
-      - CARD
-      - SBP
-      - CREDIT_CARD
-      - INVESTOR_MONEY
+    $ref: "./enums/payment_method_enum.yaml"
   status:
-    type: string
-    description: Order status
-    example: "PAID"
-    enum:
-      - PAID
-      - PENDING_PAYMENT
-      - CANCELLED
+    $ref: "./enums//status_enum.yaml"

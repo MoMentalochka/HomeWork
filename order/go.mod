@@ -3,6 +3,7 @@ module github.com/MoMentalochka/HomeWork/order
 require (
 	github.com/MoMentalochka/HomeWork/shared v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.2.1
+	github.com/google/uuid v1.6.0
 )
 
 require (
@@ -15,7 +16,6 @@ require (
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/ogen-go/ogen v1.22.0 // indirect
