@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@bufbuild/buf": "^1.71.0",
     "@redocly/cli": "^2.36.0"
   }
 }
