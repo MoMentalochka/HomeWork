@@ -34,6 +34,11 @@ properties:
     type: string
     description: Payment method
     example: "CARD"
+    enum:
+      - CARD
+      - SBP
+      - CREDIT_CARD
+      - INVESTOR_MONEY
   status:
     type: string
     description: Order status

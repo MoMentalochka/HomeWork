@@ -10,7 +10,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: "../components/order.yaml"
+            $ref: "../components/order_dto.yaml"
     '404':
       description: The order was not found
       content:
