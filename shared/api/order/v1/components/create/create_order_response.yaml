@@ -1,0 +1,13 @@
+type: object
+required:
+  - order_uuid
+  - total_price
+properties:
+  order_uuid:
+    type: string
+    description: Order ID
+    example: "cf95f4ed-6aaa-437a-a450-12de87059d70"
+  total_price:
+    type: number
+    description: Total Price
+    example: "123.45"

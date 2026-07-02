@@ -7,11 +7,11 @@ post:
     content:
       application/json:
         schema:
-          $ref: "../components/order/create_order_request.yaml"
+          $ref: "../components/create/create_order_request.yaml"
   responses:
     '201':
       description: Заказ успешно создан
       content:
         application/json:
           schema:
-            $ref: ../components/order/order.yaml
+            $ref:  "../components/create/create_order_response.yaml"

@@ -2,21 +2,25 @@ parameters:
   - $ref: "../params/uuid.yaml"
 
 post:
-  summary: Cancel order
+  summary: cancel order
   operationId: OrderCancel
   tags: [orders]
   responses:
     '204':
       description: The order has been successfully cancelled
+      content:
+        application/json:
+          schema:
+            $ref: "../components/cancel/order_cancel_response.yaml"
     '404':
       description: The order was not found
       content:
         application/json:
           schema:
-            $ref: "../components/order/errors/not_found.yaml"
+            $ref: "../components/errors/not_found.yaml"
     '409':
       description: The order has already been paid for and cannot be cancelled
       content:
         application/json:
           schema:
-            $ref: "../components/order/errors/conflict.yaml"
+            $ref: "../components/errors/conflict.yaml"

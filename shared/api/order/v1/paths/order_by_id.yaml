@@ -10,10 +10,10 @@ get:
       content:
         application/json:
           schema:
-            $ref: "../components/order/order.yaml"
+            $ref: "../components/order.yaml"
     '404':
       description: The order was not found
       content:
         application/json:
           schema:
-            $ref: "../components/order/errors/not_found.yaml"
+            $ref: "../components/errors/not_found.yaml"

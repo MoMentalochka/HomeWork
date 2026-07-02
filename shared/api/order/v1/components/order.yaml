@@ -1,15 +1,17 @@
 type: object
 required:
-#  - city
-#  - temperature
-#  - updated_at
+  - order_uuid
+  - part_uuids
+  - user_uuid
+  - total_price
+  - transaction_uuid
+  - payment_method
+  - status
 properties:
   order_uuid:
     type: string
     description: Order ID
-    minLength: 1
-    maxLength: 100
-    example: "Moscow"
+    example: "order_uuid"
   user_uuid:
     type: string
     description: User ID
@@ -36,3 +38,7 @@ properties:
     type: string
     description: Order status
     example: "PAID"
+    enum:
+      - PAID
+      - PENDING_PAYMENT
+      - CANCELLED

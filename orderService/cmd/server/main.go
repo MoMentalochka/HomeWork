@@ -16,6 +16,7 @@ import (
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/google/uuid"
 )
 
 const (
@@ -26,28 +27,27 @@ const (
 
 type OrderStore struct {
 	mu     sync.Mutex
-	orders map[string]*ordersv1.CreateOrderRequest
+	orders map[string]*ordersv1.Order
 }
 
 func NewOrderStore() *OrderStore {
 	return &OrderStore{
-		orders: make(map[string]*ordersv1.CreateOrderRequest),
+		orders: make(map[string]*ordersv1.Order),
 	}
 }
 
-func (s *OrderStore) AddOrder(order *ordersv1.CreateOrderRequest) {
+func (s *OrderStore) AddOrder(order *ordersv1.Order) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.orders["13223"] = order
-	fmt.Println("Записал", s.orders)
+	s.orders[order.OrderUUID] = order
 }
 
-func (s *OrderStore) GetOrder(id string) *ordersv1.CreateOrderRequest {
+func (s *OrderStore) GetOrder(id string) *ordersv1.Order {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	order, ok := s.orders["13223"]
+	order, ok := s.orders[id]
 	if !ok {
 		return nil
 	}
@@ -65,11 +65,19 @@ func NewOrderHandler(store *OrderStore) *OrderHandler {
 	}
 }
 
-func (h *OrderHandler) CreateNewOrder(ctx context.Context, req *ordersv1.CreateOrderRequest) (*ordersv1.Order, error) {
-	return &ordersv1.Order{}, nil
+func (h *OrderHandler) CreateNewOrder(_ context.Context, req *ordersv1.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error) {
+	order := &ordersv1.Order{
+		OrderUUID: uuid.New().String(),
+		PartUuids: req.PartUuids,
+		UserUUID:  req.UserUUID,
+		Status:    ordersv1.OrderStatusPENDINGPAYMENT,
+	}
+
+	h.store.AddOrder(order)
+	return &ordersv1.CreateOrderResponse{OrderUUID: order.OrderUUID, TotalPrice: 0.0}, nil
 }
 
-func (h *OrderHandler) GetOrderById(ctx context.Context, params ordersv1.GetOrderByIdParams) (ordersv1.GetOrderByIdRes, error) {
+func (h *OrderHandler) GetOrderById(_ context.Context, params ordersv1.GetOrderByIdParams) (ordersv1.GetOrderByIdRes, error) {
 
 	order := h.store.GetOrder(params.OrderUUID)
 
@@ -80,15 +88,48 @@ func (h *OrderHandler) GetOrderById(ctx context.Context, params ordersv1.GetOrde
 		}, nil
 	}
 
-	return nil, nil
+	return order, nil
 }
 
-func (h *OrderHandler) OrderCancel(ctx context.Context, params ordersv1.OrderCancelParams) (ordersv1.OrderCancelRes, error) {
-	return nil, nil
+func (h *OrderHandler) OrderCancel(_ context.Context, params ordersv1.OrderCancelParams) (ordersv1.OrderCancelRes, error) {
+	order := h.store.GetOrder(params.OrderUUID)
+	if order == nil {
+		return &ordersv1.NotFound{
+			Code:    404,
+			Message: fmt.Sprintf("Order with uuid '%s' not found", params.OrderUUID),
+		}, nil
+	}
+	if order.Status == "PAID" || order.Status == "CANCELLED" {
+		return &ordersv1.Conflict{
+			Code:    409,
+			Message: fmt.Sprintf("Order with uuid '%s' is already paid or cancelled", params.OrderUUID),
+		}, nil
+	}
+	order.Status = "CANCELLED"
+	return &ordersv1.OrderCancelResponse{TransactionUUID: order.TransactionUUID}, nil
 }
 
-func (h *OrderHandler) OrderPay(ctx context.Context, req *ordersv1.OrderPayRequest, params ordersv1.OrderPayParams) (ordersv1.OrderPayRes, error) {
-	return nil, nil
+func (h *OrderHandler) OrderPay(_ context.Context, req ordersv1.OptOrderPayRequest, params ordersv1.OrderPayParams) (ordersv1.OrderPayRes, error) {
+	order := h.store.GetOrder(params.OrderUUID)
+
+	if order == nil {
+		return &ordersv1.NotFound{
+			Code:    404,
+			Message: fmt.Sprintf("Order with uuid '%s' not found", params.OrderUUID),
+		}, nil
+	}
+
+	if order.Status == "CANCELLED" || order.Status == "PAID" {
+		return &ordersv1.Conflict{
+			Code:    404,
+			Message: fmt.Sprintf("Order with uuid '%s' is already paid or cancelled", params.OrderUUID),
+		}, nil
+	}
+
+	order.Status = "PAID"
+	order.PaymentMethod = req.Value.PaymentMethod
+	order.TransactionUUID = uuid.New().String()
+	return &ordersv1.OrderPayResponse{TransactionUUID: order.TransactionUUID}, nil
 }
 
 func main() {

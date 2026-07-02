@@ -5,13 +5,11 @@ post:
   summary: Request for order payment
   operationId: OrderPay
   tags: [orders]
-
   requestBody:
-    required: true
     content:
       application/json:
         schema:
-          $ref: "../components/order/orderPay/order_pay_request.yaml"
+          $ref: "../components/pay/order_pay_request.yaml"
 
   responses:
     '200':
@@ -19,10 +17,16 @@ post:
       content:
         application/json:
           schema:
-            $ref: "../components/order/orderPay/order_pay_response.yaml"
+            $ref: "../components/pay/order_pay_response.yaml"
     '404':
-      description: The order wa not found
+      description: The order was not found
       content:
         application/json:
           schema:
-            $ref: "../components/order/errors/not_found.yaml"
+            $ref: "../components/errors/not_found.yaml"
+    '409':
+      description: The order has already been paid or cancelled for and cannot be paid
+      content:
+        application/json:
+          schema:
+            $ref: "../components/errors/conflict.yaml"
