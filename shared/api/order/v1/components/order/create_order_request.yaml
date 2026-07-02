@@ -1,8 +1,7 @@
 type: object
 required:
-#  - city
-#  - temperature
-#  - updated_at
+  - user_uuid
+  - part_uuids
 properties:
   user_uuid:
     type: string

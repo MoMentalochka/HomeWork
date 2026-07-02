@@ -1,0 +1,6 @@
+type: object
+properties:
+  transaction_uuid:
+    type: string
+    description:  Transaction Id
+    example: "transaction_uuid"

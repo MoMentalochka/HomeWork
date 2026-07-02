@@ -1,0 +1,28 @@
+parameters:
+  - $ref: "../params/uuid.yaml"
+
+post:
+  summary: Request for order payment
+  operationId: OrderPay
+  tags: [orders]
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/order/orderPay/order_pay_request.yaml"
+
+  responses:
+    '200':
+      description: The order has been successfully paid for
+      content:
+        application/json:
+          schema:
+            $ref: "../components/order/orderPay/order_pay_response.yaml"
+    '404':
+      description: The order wa not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/order/errors/not_found.yaml"

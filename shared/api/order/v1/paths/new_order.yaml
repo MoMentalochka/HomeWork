@@ -1,0 +1,17 @@
+post:
+  summary: Creates new order with selected details
+  operationId: CreateNewOrder
+  tags: [orders, order]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/order/create_order_request.yaml"
+  responses:
+    '201':
+      description: Заказ успешно создан
+      content:
+        application/json:
+          schema:
+            $ref: ../components/order/order.yaml

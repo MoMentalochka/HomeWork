@@ -1,0 +1,19 @@
+parameters:
+  - $ref: "../params/uuid.yaml"
+get:
+  summary: Get order by id
+  operationId: GetOrderById
+  tags: [ order ]
+  responses:
+    '200':
+      description: Weather information successfully retrieved
+      content:
+        application/json:
+          schema:
+            $ref: "../components/order/order.yaml"
+    '404':
+      description: The order was not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/order/errors/not_found.yaml"

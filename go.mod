@@ -1,3 +1,3 @@
-module hw_week_1
+module https://github.com/MoMentalochka/HomeWork/shared
 
 go 1.26

@@ -209,7 +209,7 @@ tasks:
     cmds:
       - task: redocly-cli:bundle
       - |
-        find {{.OPEN_API_FILES}} -name '*.yaml' -o -name '*.yml' | while read -r file; do
+        find {{.OPEN_API_FILES}} -name '*.yaml' | while read -r file; do
           if [ -f "$file" ] && grep -q 'x-ogen:' "$file"; then
             echo "🚀 Generating from: $file"
             target=$({{.YQ}} e '."x-ogen".target' "$file")

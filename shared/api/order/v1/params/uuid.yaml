@@ -4,6 +4,4 @@ required: true
 description: uuid заказа
 schema:
   type: string
-  minLength: 1
-  maxLength: 100
   example: "orde-uuid-sdas-asda-sdas"
