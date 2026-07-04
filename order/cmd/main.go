@@ -14,7 +14,8 @@ import (
 	"time"
 
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
-	payment_v1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
+	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
+	paymentv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
@@ -25,6 +26,7 @@ import (
 const (
 	httpPort          = "8080"
 	paymentPort       = "50052"
+	inventoryPort     = "50051"
 	readHeaderTimeout = 5 * time.Second
 	shutdownTimeout   = 10 * time.Second
 )
@@ -60,18 +62,28 @@ func (s *OrderStore) GetOrder(id string) *ordersv1.OrderDto {
 }
 
 type OrderHandler struct {
-	store         *OrderStore
-	paymentClient payment_v1.PaymentServiceClient
+	store           *OrderStore
+	paymentClient   paymentv1.PaymentServiceClient
+	inventoryClient inventoryv1.InventoryServiceClient
 }
 
-func NewOrderHandler(store *OrderStore, client payment_v1.PaymentServiceClient) *OrderHandler {
+func NewOrderHandler(store *OrderStore, payment paymentv1.PaymentServiceClient, inventory inventoryv1.InventoryServiceClient) *OrderHandler {
 	return &OrderHandler{
-		store:         store,
-		paymentClient: client,
+		store:           store,
+		paymentClient:   payment,
+		inventoryClient: inventory,
 	}
 }
 
-func (h *OrderHandler) CreateNewOrder(_ context.Context, req *ordersv1.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error) {
+func (h *OrderHandler) CreateNewOrder(ctx context.Context, req *ordersv1.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error) {
+
+	for _, partUuid := range req.PartUuids {
+		_, err := h.inventoryClient.GetPart(ctx, &inventoryv1.GetPartRequest{Uuid: partUuid})
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	order := &ordersv1.OrderDto{
 		OrderUUID: uuid.New().String(),
 		PartUuids: req.PartUuids,
@@ -132,11 +144,11 @@ func (h *OrderHandler) OrderPay(ctx context.Context, req ordersv1.OptOrderPayReq
 		}, nil
 	}
 
-	method := payment_v1.PaymentMethod_value[string(req.Value.PaymentMethod)]
-	payRequest := payment_v1.PayOrderRequest{
+	method := paymentv1.PaymentMethod_value[string(req.Value.PaymentMethod)]
+	payRequest := paymentv1.PayOrderRequest{
 		UserUuid:      order.UserUUID,
 		OrderUuid:     order.OrderUUID,
-		PaymentMethod: payment_v1.PaymentMethod(method),
+		PaymentMethod: paymentv1.PaymentMethod(method),
 	}
 	res, err := h.paymentClient.PayOrder(ctx, &payRequest)
 	if err != nil {
@@ -150,7 +162,7 @@ func (h *OrderHandler) OrderPay(ctx context.Context, req ordersv1.OptOrderPayReq
 
 func main() {
 
-	conn, err := grpc.NewClient(
+	paymentConn, err := grpc.NewClient(
 		fmt.Sprintf("localhost:%s", paymentPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
@@ -159,8 +171,26 @@ func main() {
 		return
 	}
 
+	inventoryConn, err := grpc.NewClient(
+		fmt.Sprintf("localhost:%s", inventoryPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Printf("failed to connect: %v\n", err)
+		return
+	}
+
+	defer func() {
+		if err := inventoryConn.Close(); err != nil {
+			log.Printf("failed to close inventoryConn: %v", err)
+		}
+		if err := paymentConn.Close(); err != nil {
+			log.Printf("failed to close paymentConn: %v", err)
+		}
+	}()
+
 	storage := NewOrderStore()
-	orderHandler := NewOrderHandler(storage, payment_v1.NewPaymentServiceClient(conn))
+	orderHandler := NewOrderHandler(storage, paymentv1.NewPaymentServiceClient(paymentConn), inventoryv1.NewInventoryServiceClient(inventoryConn))
 
 	ordersServer, err := ordersv1.NewServer(orderHandler)
 	if err != nil {
@@ -199,9 +229,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	if err := conn.Close(); err != nil {
-		log.Printf("failed to close connect: %v", err)
-	}
+
 	log.Println("🛑 Завершение работы сервера...")
 
 	err = server.Shutdown(ctx)

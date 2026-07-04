@@ -18,4 +18,4 @@ require (
 
 go 1.26.4
 
-replace github.com/MoMentalochka/HomeWork/shared => ../shared
+replace github.com/MoMentalochka/HomeWork/shared => ./shared
