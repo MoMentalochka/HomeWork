@@ -375,9 +375,9 @@ tasks:
         ORDER_INFO_RESPONSE=$(curl -s -X GET "http://localhost:8080/api/v1/orders/$ORDER_UUID")
         
         # Извлекаем статус заказа
-        ORDER_STATUS=$(echo $ORDER_INFO_RESPONSE | grep -o '"status":"[^"]*' | cut -d'"' -f4)
+        ORDER_STATUS=$(echo $ORDER_INFO_RESPONSE | sed -n 's/.*"Status"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
         if [ -z "$ORDER_STATUS" ]; then
-          ORDER_STATUS=$(echo $ORDER_INFO_RESPONSE | grep -o '"status": "[^"]*' | cut -d'"' -f4)
+          ORDER_STATUS=$(echo $ORDER_INFO_RESPONSE | sed -n 's/.*"Status"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
         fi
         
         # Проверяем, что статус стал PAID
@@ -400,9 +400,9 @@ tasks:
         fi
         
         # Извлекаем UUID второго заказа с учетом разных форматов JSON
-        ORDER2_UUID=$(echo $ORDER2_RESPONSE | grep -o '"uuid":"[^"]*' | cut -d'"' -f4)
+        ORDER2_UUID=$(echo $ORDER2_RESPONSE | sed -n 's/.*"uuid"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
         if [ -z "$ORDER2_UUID" ]; then
-          ORDER2_UUID=$(echo $ORDER2_RESPONSE | grep -o '"uuid": "[^"]*' | cut -d'"' -f4)
+          ORDER2_UUID=$(echo $ORDER2_RESPONSE | sed -n 's/.*"uuid"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
           if [ -z "$ORDER2_UUID" ]; then
             echo "❌ Не удалось извлечь UUID второго заказа из ответа."
             echo "🔍 Ответ сервера: $ORDER2_RESPONSE"
@@ -413,9 +413,9 @@ tasks:
         
         # Проверяем его начальный статус
         ORDER2_INFO=$(curl -s -X GET "http://localhost:8080/api/v1/orders/$ORDER2_UUID")
-        ORDER2_STATUS=$(echo $ORDER2_INFO | grep -o '"status":"[^"]*' | cut -d'"' -f4)
+        ORDER2_STATUS=$(echo $ORDER2_INFO | sed -n 's/.*"Status"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
         if [ -z "$ORDER2_STATUS" ]; then
-          ORDER2_STATUS=$(echo $ORDER2_INFO | grep -o '"status": "[^"]*' | cut -d'"' -f4)
+          ORDER2_STATUS=$(echo $ORDER2_INFO | sed -n 's/.*"Status"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
         fi
         
         if [[ "$ORDER2_STATUS" != *"PENDING_PAYMENT"* ]]; then
@@ -425,7 +425,7 @@ tasks:
         echo "✅ Начальный статус второго заказа: $ORDER2_STATUS"
         
         echo
-        echo "❌ Тест 9: Отмена второго заказа (REST API)"
+        echo "📝 Тест 9: Отмена второго заказа (REST API)"
         echo "Ожидаем 2 секунды перед отменой..."
         sleep 2
         
@@ -434,9 +434,9 @@ tasks:
         echo "Проверяем статус после отмены..."
         
         ORDER2_INFO=$(curl -s -X GET "http://localhost:8080/api/v1/orders/$ORDER2_UUID")
-        ORDER2_STATUS=$(echo $ORDER2_INFO | grep -o '"status":"[^"]*' | cut -d'"' -f4)
+        ORDER2_STATUS=$(echo $ORDER2_INFO | sed -n 's/.*"Status"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
         if [ -z "$ORDER2_STATUS" ]; then
-          ORDER2_STATUS=$(echo $ORDER2_INFO | grep -o '"status": "[^"]*' | cut -d'"' -f4)
+          ORDER2_STATUS=$(echo $ORDER2_INFO | sed -n 's/.*"Status"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
         fi
         
         if [[ "$ORDER2_STATUS" != *"CANCELLED"* ]]; then
