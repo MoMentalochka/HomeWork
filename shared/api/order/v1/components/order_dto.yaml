@@ -31,6 +31,6 @@ properties:
     type: string
     example: "transaction_uuid"
   payment_method:
-    $ref: "./enums/payment_method_enum.yaml"
+    $ref: "./enums/payment_method.yaml"
   status:
-    $ref: "./enums//status_enum.yaml"
+    $ref: "./enums//status.yaml"

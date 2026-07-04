@@ -47,6 +47,14 @@ func (s *inventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRe
 }
 func (s *inventoryService) ListParts(_ context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
 	filteredParts := make([]*inventoryV1.Part, 0, len(s.parts))
+	if req.Filter == nil {
+		for _, v := range s.parts {
+			filteredParts = append(filteredParts, v)
+		}
+		return &inventoryV1.ListPartsResponse{
+			Parts: filteredParts,
+		}, nil
+	}
 	// If uuid's included fast filter
 	if len(req.Filter.Uuids) == 0 {
 		for _, v := range s.parts {
@@ -130,7 +138,7 @@ func main() {
 	service := &inventoryService{
 		parts: make(map[string]*inventoryV1.Part),
 	}
-	service.parts["1"] = &inventoryV1.Part{Uuid: "1", Price: 12.1}
+	service.parts["1"] = &inventoryV1.Part{Uuid: "1", Price: 12.1, Name: "Турбина", Category: 1, Description: "Просто турбина"}
 	service.parts["2"] = &inventoryV1.Part{Uuid: "2", Price: 2.2}
 	inventoryV1.RegisterInventoryServiceServer(serv, service)
 

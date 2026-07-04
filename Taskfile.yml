@@ -262,7 +262,7 @@ tasks:
     cmds:
       - |
         echo "🧪 Тестирование API микросервисов через gRPC и REST"
-        
+        echo "# @TODO Для корректной работы тестов подправить формат выборки данных из ответов API, cut а Windows работает иначе, sed требует форматирования"
         echo "📦 Тест 1: Получение списка деталей из Inventory"
         PARTS_RESPONSE=$({{.GRPCURL}} -plaintext -d '{"filter":{}}' localhost:50051 inventory.v1.InventoryService/ListParts)
         
@@ -271,9 +271,9 @@ tasks:
           echo "🔍 Ответ сервера: $PARTS_RESPONSE"
           exit 1
         fi
-        
+    
         # Извлекаем UUID первой детали для дальнейших тестов
-        PART_UUID=$(echo $PARTS_RESPONSE | grep -o '"uuid": "[^"]*' | head -1 | cut -d'"' -f4)
+        PART_UUID=$(printf '%s\n' "$PARTS_RESPONSE" | sed -n 's/.*"uuid"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)        
         if [ -z "$PART_UUID" ]; then
           echo "❌ Не удалось найти UUID детали в ответе."
           echo "🔍 Ответ сервера: $PARTS_RESPONSE"
@@ -282,7 +282,7 @@ tasks:
         echo "✅ Успешно получен список деталей, первая UUID: $PART_UUID"
         
         echo
-        echo "🔍 Тест 2: Получение информации о детали по UUID"
+        echo "🔍 Тест 2: Получение информации о детали по UUID" "$PART_UUID" 
         PART_RESPONSE=$({{.GRPCURL}} -plaintext -d "{\"uuid\":\"$PART_UUID\"}" localhost:50051 inventory.v1.InventoryService/GetPart)
         
         if [[ -z "$PART_RESPONSE" || "$PART_RESPONSE" == *"error"* ]]; then
@@ -292,7 +292,7 @@ tasks:
         fi
         
         # Извлекаем имя детали 
-        PART_NAME=$(echo $PART_RESPONSE | grep -o '"name": "[^"]*' | cut -d'"' -f4)
+        PART_NAME=$(printf '%s\n' "$PART_RESPONSE" | grep -o '"name": "[^"]*' | head -1)
         if [ -z "$PART_NAME" ]; then
           echo "❌ Не удалось извлечь имя детали из ответа."
           echo "🔍 Ответ сервера: $PART_RESPONSE"
@@ -319,9 +319,10 @@ tasks:
         fi
         
         # Извлекаем UUID заказа с учетом разных форматов JSON
-        ORDER_UUID=$(echo $ORDER_RESPONSE | grep -o '"uuid":"[^"]*' | cut -d'"' -f4)
+        ORDER_UUID=$(echo $ORDER_RESPONSE | sed -n 's/.*"uuid"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+        echo "$ORDER_UUID"
         if [ -z "$ORDER_UUID" ]; then
-          ORDER_UUID=$(echo $ORDER_RESPONSE | grep -o '"uuid": "[^"]*' | cut -d'"' -f4)
+          ORDER_UUID=$(echo $ORDER_RESPONSE | sed -n 's/.*"uuid"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
           if [ -z "$ORDER_UUID" ]; then
             echo "❌ Не удалось извлечь UUID заказа из ответа."
             echo "🔍 Ответ сервера: $ORDER_RESPONSE"
@@ -333,7 +334,7 @@ tasks:
         echo
         echo "📊 Тест 5: Проверка начального статуса заказа (должен быть PENDING_PAYMENT)"
         ORDER_INFO_RESPONSE=$(curl -s -X GET "http://localhost:8080/api/v1/orders/$ORDER_UUID")
-        
+
         if [[ -z "$ORDER_INFO_RESPONSE" || "$ORDER_INFO_RESPONSE" == *"error"* ]]; then
           echo "❌ Не удалось получить информацию о заказе."
           echo "🔍 Ответ сервера: $ORDER_INFO_RESPONSE"
@@ -341,15 +342,13 @@ tasks:
         fi
         
         # Извлекаем статус заказа с учетом разных форматов JSON
-        ORDER_STATUS=$(echo $ORDER_INFO_RESPONSE | grep -o '"status":"[^"]*' | cut -d'"' -f4)
-        if [ -z "$ORDER_STATUS" ]; then
-          ORDER_STATUS=$(echo $ORDER_INFO_RESPONSE | grep -o '"status": "[^"]*' | cut -d'"' -f4)
+
+          ORDER_STATUS=$(printf '%s\n' "$ORDER_INFO_RESPONSE" | sed -n 's/.*"Status"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
           if [ -z "$ORDER_STATUS" ]; then
-            echo "❌ Не удалось извлечь статус заказа из ответа."
+            echo "❌ Не удалось извлечь статус заказа из ответа. $ORDER_STATUS"
             echo "🔍 Ответ сервера: $ORDER_INFO_RESPONSE"
             exit 1
           fi
-        fi
         
         # Проверяем, что начальный статус PENDING_PAYMENT
         if [[ "$ORDER_STATUS" != *"PENDING_PAYMENT"* ]]; then

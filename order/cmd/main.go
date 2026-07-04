@@ -14,13 +14,17 @@ import (
 	"time"
 
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
+	payment_v1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
 	httpPort          = "8080"
+	paymentPort       = "50052"
 	readHeaderTimeout = 5 * time.Second
 	shutdownTimeout   = 10 * time.Second
 )
@@ -56,12 +60,14 @@ func (s *OrderStore) GetOrder(id string) *ordersv1.OrderDto {
 }
 
 type OrderHandler struct {
-	store *OrderStore
+	store         *OrderStore
+	paymentClient payment_v1.PaymentServiceClient
 }
 
-func NewOrderHandler(store *OrderStore) *OrderHandler {
+func NewOrderHandler(store *OrderStore, client payment_v1.PaymentServiceClient) *OrderHandler {
 	return &OrderHandler{
-		store: store,
+		store:         store,
+		paymentClient: client,
 	}
 }
 
@@ -70,7 +76,7 @@ func (h *OrderHandler) CreateNewOrder(_ context.Context, req *ordersv1.CreateOrd
 		OrderUUID: uuid.New().String(),
 		PartUuids: req.PartUuids,
 		UserUUID:  req.UserUUID,
-		Status:    ordersv1.StatusEnumPENDINGPAYMENT,
+		Status:    ordersv1.StatusPENDINGPAYMENT,
 	}
 
 	h.store.AddOrder(order)
@@ -109,7 +115,7 @@ func (h *OrderHandler) OrderCancel(_ context.Context, params ordersv1.OrderCance
 	return &ordersv1.OrderCancelResponse{TransactionUUID: order.TransactionUUID}, nil
 }
 
-func (h *OrderHandler) OrderPay(_ context.Context, req ordersv1.OptOrderPayRequest, params ordersv1.OrderPayParams) (ordersv1.OrderPayRes, error) {
+func (h *OrderHandler) OrderPay(ctx context.Context, req ordersv1.OptOrderPayRequest, params ordersv1.OrderPayParams) (ordersv1.OrderPayRes, error) {
 	order := h.store.GetOrder(params.OrderUUID)
 
 	if order == nil {
@@ -126,16 +132,35 @@ func (h *OrderHandler) OrderPay(_ context.Context, req ordersv1.OptOrderPayReque
 		}, nil
 	}
 
+	method := payment_v1.PaymentMethod_value[string(req.Value.PaymentMethod)]
+	payRequest := payment_v1.PayOrderRequest{
+		UserUuid:      order.UserUUID,
+		OrderUuid:     order.OrderUUID,
+		PaymentMethod: payment_v1.PaymentMethod(method),
+	}
+	res, err := h.paymentClient.PayOrder(ctx, &payRequest)
+	if err != nil {
+		return nil, err
+	}
 	order.Status = "PAID"
 	order.PaymentMethod = req.Value.PaymentMethod
-	order.TransactionUUID = uuid.New().String()
+	order.TransactionUUID = res.TransactionUuid
 	return &ordersv1.OrderPayResponse{TransactionUUID: order.TransactionUUID}, nil
 }
 
 func main() {
 
+	conn, err := grpc.NewClient(
+		fmt.Sprintf("localhost:%s", paymentPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Printf("failed to connect: %v\n", err)
+		return
+	}
+
 	storage := NewOrderStore()
-	orderHandler := NewOrderHandler(storage)
+	orderHandler := NewOrderHandler(storage, payment_v1.NewPaymentServiceClient(conn))
 
 	ordersServer, err := ordersv1.NewServer(orderHandler)
 	if err != nil {
@@ -157,6 +182,9 @@ func main() {
 		Handler:           r,
 		ReadHeaderTimeout: readHeaderTimeout,
 	}
+	// Создаем контекст с таймаутом для остановки сервера
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
 
 	// Запускаем сервер в отдельной горутине
 	go func() {
@@ -171,12 +199,10 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-
+	if err := conn.Close(); err != nil {
+		log.Printf("failed to close connect: %v", err)
+	}
 	log.Println("🛑 Завершение работы сервера...")
-
-	// Создаем контекст с таймаутом для остановки сервера
-	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
-	defer cancel()
 
 	err = server.Shutdown(ctx)
 	if err != nil {

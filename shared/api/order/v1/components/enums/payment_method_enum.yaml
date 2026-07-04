@@ -1,8 +1,0 @@
-type: string
-description: Payment method
-example: "CARD"
-enum:
-  - CARD
-  - SBP
-  - CREDIT_CARD
-  - INVESTOR_MON
