@@ -56,3 +56,32 @@ func ModelToPart(part model.Part) *inventoryv1.Part {
 		UpdatedAt:     updatedAt,
 	}
 }
+
+func ModelsToParts(models []*model.Part) []*inventoryv1.Part {
+	parts := make([]*inventoryv1.Part, 0, len(models))
+	for _, mod := range models {
+		parts = append(parts, ModelToPart(*mod))
+	}
+	return parts
+}
+
+func PartsFilterToModel(filters *inventoryv1.PartsFilter) *model.PartsFilter {
+	if filters == nil {
+		return &model.PartsFilter{}
+	}
+	var categories []model.Category
+
+	if filters.Categories != nil && len(filters.Categories) > 0 {
+		for _, category := range filters.Categories {
+			categories = append(categories, model.Category(category))
+		}
+	}
+
+	return &model.PartsFilter{
+		Uuids:                 filters.Uuids,
+		Names:                 filters.Names,
+		Categories:            categories,
+		ManufacturerCountries: filters.ManufacturerCountries,
+		Tags:                  filters.Tags,
+	}
+}

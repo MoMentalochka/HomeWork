@@ -3,10 +3,19 @@ package inventory
 import (
 	"context"
 
+	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
+	"github.com/MoMentalochka/HomeWork/inventory/internal/repository/converter"
 	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
-	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
-func (r *repository) ListParts(_ context.Context, req *inventoryV1.ListPartsRequest) ([]*repomodel.Part, error) {
-	return []*repomodel.Part{}, nil
+func (r *repository) ListParts(_ context.Context, filters *repomodel.PartsFilter) ([]*model.Part, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	parts := make([]*model.Part, 0, len(r.data))
+
+	for _, v := range r.data {
+		parts = append(parts, new(converter.PartToModel(v)))
+	}
+	return parts, nil
 }
