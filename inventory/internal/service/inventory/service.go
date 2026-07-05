@@ -7,3 +7,9 @@ import (
 type service struct {
 	inventoryRepository repository.InventoryRepository
 }
+
+func NewService(inventoryRepository repository.InventoryRepository) *service {
+	return &service{
+		inventoryRepository: inventoryRepository,
+	}
+}

@@ -3,9 +3,10 @@ package repository
 import (
 	"context"
 
-	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
+	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
 )
 
 type InventoryRepository interface {
-	GetParts(_ context.Context, uuid string) (model.Part, error)
+	GetPart(_ context.Context, uuid string) (repomodel.Part, error)
+	ListParts(_ context.Context, uuid string) ([]*repomodel.Part, error)
 }

@@ -3,16 +3,16 @@ package inventory
 import (
 	"sync"
 
-	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
+	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
 )
 
 type repository struct {
 	mu   sync.RWMutex
-	data map[string]*inventoryV1.Part
+	data map[string]repomodel.Part
 }
 
 func NewRepository() *repository {
 	return &repository{
-		data: make(map[string]*inventoryV1.Part),
+		data: make(map[string]repomodel.Part),
 	}
 }

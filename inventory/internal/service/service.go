@@ -7,5 +7,6 @@ import (
 )
 
 type InventoryService interface {
-	GetParts(_ context.Context, uuid string) (model.Part, error)
+	GetPart(_ context.Context, uuid string) (model.Part, error)
+	ListParts(_ context.Context, uuid string) ([]*model.Part, error)
 }
