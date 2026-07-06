@@ -10,6 +10,7 @@ import (
 func (s *service) ListParts(ctx context.Context, filters *model.PartsFilter) ([]*model.Part, error) {
 	parts, err := s.inventoryRepository.ListParts(ctx, converter.ModelFiltersToRepoModelFilters(filters))
 	if err != nil {
+		return nil, err
 	}
 	return parts, nil
 }

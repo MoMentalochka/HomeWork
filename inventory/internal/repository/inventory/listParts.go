@@ -17,5 +17,11 @@ func (r *repository) ListParts(_ context.Context, filters *repomodel.PartsFilter
 	for _, v := range r.data {
 		parts = append(parts, new(converter.PartToModel(v)))
 	}
+
+	parts = filteredParts(parts, filters)
+
+	if parts == nil {
+		return []*model.Part{}, model.ErrPartNotFound
+	}
 	return parts, nil
 }

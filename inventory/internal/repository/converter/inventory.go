@@ -12,11 +12,6 @@ func PartToModel(part repomodel.Part) model.Part {
 		dimensions = PartDimensionsToModel(part.Dimensions)
 	}
 
-	var category model.Category
-	if part.Category != "" {
-		category = PartCategoryToModel(part.Category)
-	}
-
 	var manufacturer *model.Manufacturer
 	if part.Manufacturer != nil {
 		manufacturer = PartManufacturerToModel(part.Manufacturer)
@@ -28,7 +23,7 @@ func PartToModel(part repomodel.Part) model.Part {
 		Description:   part.Description,
 		Price:         part.Price,
 		StockQuantity: part.StockQuantity,
-		Category:      category,
+		Category:      part.Category,
 		Dimensions:    dimensions,
 		Manufacturer:  manufacturer,
 		Tags:          part.Tags,
@@ -59,10 +54,6 @@ func PartToModel(part repomodel.Part) model.Part {
 //	}
 //}
 
-func PartCategoryToModel(part repomodel.Category) model.Category {
-	return model.Category(part)
-}
-
 func PartDimensionsToModel(dimensions *repomodel.Dimensions) *model.Dimensions {
 	return &model.Dimensions{
 		Width:  dimensions.Width,
@@ -84,11 +75,11 @@ func ModelFiltersToRepoModelFilters(filters *model.PartsFilter) *repomodel.Parts
 	if filters == nil {
 		return &repomodel.PartsFilter{}
 	}
-	var categories []repomodel.Category
+	var categories []string
 
 	if filters.Categories != nil && len(filters.Categories) > 0 {
 		for _, category := range filters.Categories {
-			categories = append(categories, repomodel.Category(category))
+			categories = append(categories, category)
 		}
 	}
 

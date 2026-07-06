@@ -69,11 +69,11 @@ func PartsFilterToModel(filters *inventoryv1.PartsFilter) *model.PartsFilter {
 	if filters == nil {
 		return &model.PartsFilter{}
 	}
-	var categories []model.Category
+	var categories []string
 
 	if filters.Categories != nil && len(filters.Categories) > 0 {
 		for _, category := range filters.Categories {
-			categories = append(categories, model.Category(category))
+			categories = append(categories, string(category))
 		}
 	}
 

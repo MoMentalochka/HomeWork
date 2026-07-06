@@ -18,7 +18,7 @@ type Part struct {
 	//  Количество на складе
 	StockQuantity int64
 	//  Категория
-	Category Category
+	Category string
 	//  Размеры детали
 	Dimensions *Dimensions
 	//  Информация о производителе
@@ -39,7 +39,7 @@ type PartsFilter struct {
 	//  Список имён. Пусто — не фильтруем по имени
 	Names []string
 	//  Список категорий. Пусто — не фильтруем по категории
-	Categories []Category
+	Categories []string
 	//  Список стран производителей. Пусто — не фильтруем по стране
 	ManufacturerCountries []string
 	//  Список тегов. Пусто — не фильтруем по тегам
@@ -57,7 +57,6 @@ type Dimensions struct {
 	Weight float64
 }
 
-type Category string
 type Manufacturer struct {
 	//  Название
 	Name string
