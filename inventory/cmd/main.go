@@ -55,7 +55,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Printf("🛑 Gracefully shutdown inventory server %d\n", grpcPort)
+	log.Printf("🛑 Gracefully shutdown order server %d\n", grpcPort)
 	s.GracefulStop()
 	log.Printf("✅ Inventory server stopped")
 }

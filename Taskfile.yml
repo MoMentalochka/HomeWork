@@ -32,7 +32,7 @@ vars:
 
   OPEN_API_FILES: '{{.ROOT_DIR}}/shared/api/bundles'
 
-  MODULES: inventory payment order
+  MODULES: order payment order
 
 tasks:
   install-formatters:
