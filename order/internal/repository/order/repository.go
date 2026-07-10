@@ -3,28 +3,28 @@ package order
 import (
 	"sync"
 
-	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
+	"github.com/MoMentalochka/HomeWork/order/internal/model"
 )
 
 type orderRepository struct {
 	mu     sync.Mutex
-	orders map[string]*ordersv1.OrderDto
+	orders map[string]*model.OrderDto
 }
 
 func NewOrderRepository() *orderRepository {
 	return &orderRepository{
-		orders: make(map[string]*ordersv1.OrderDto),
+		orders: make(map[string]*model.OrderDto),
 	}
 }
 
-func (r *orderRepository) AddOrder(order *ordersv1.OrderDto) {
+func (r *orderRepository) AddOrder(order *model.OrderDto) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
 	r.orders[order.OrderUUID] = order
 }
 
-func (r *orderRepository) GetOrder(id string) *ordersv1.OrderDto {
+func (r *orderRepository) GetOrder(id string) *model.OrderDto {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 

@@ -1,8 +1,10 @@
 package repository
 
-import ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
+import (
+	"github.com/MoMentalochka/HomeWork/order/internal/model"
+)
 
 type OrderRepository interface {
-	AddOrder(order *ordersv1.OrderDto)
-	GetOrder(id string) *ordersv1.OrderDto
+	AddOrder(order *model.OrderDto)
+	GetOrder(id string) *model.OrderDto
 }

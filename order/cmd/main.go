@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 	"time"
 
 	orderApi "github.com/MoMentalochka/HomeWork/order/internal/api/order/v1"
+	inventoryClient "github.com/MoMentalochka/HomeWork/order/internal/client/grpc/inventory/v1"
+	paymentClient "github.com/MoMentalochka/HomeWork/order/internal/client/grpc/payment/v1"
 	orderRepository "github.com/MoMentalochka/HomeWork/order/internal/repository/order"
 	orderService "github.com/MoMentalochka/HomeWork/order/internal/service/order"
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
@@ -19,20 +22,52 @@ import (
 	paymentv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
 	httpPort          = "8080"
 	readHeaderTimeout = 5 * time.Second
 	shutdownTimeout   = 10 * time.Second
+	paymentPort       = "50052"
+	inventoryPort     = "50051"
 )
 
 func main() {
 
-	repo := orderRepository.NewOrderRepository()
-	service := orderService.NewOrderService(repo)
-	api := orderApi.NewOrderApi(service, paymentv1.NewPaymentServiceClient(paymentConn), inventoryv1.NewInventoryServiceClient(inventoryConn))
+	//	Payment Client
+	paymentConn, err := grpc.NewClient(
+		fmt.Sprintf("localhost:%s", paymentPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Printf("failed to connect: %v\n", err)
+	}
+	paymentC := paymentClient.NewPaymentClient(paymentv1.NewPaymentServiceClient(paymentConn))
 
+	//	Inventory Client
+	inventoryConn, err := grpc.NewClient(
+		fmt.Sprintf("localhost:%s", inventoryPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Printf("failed to connect: %v\n", err)
+	}
+	inventoryC := inventoryClient.NewInventoryClient(inventoryv1.NewInventoryServiceClient(inventoryConn))
+
+	defer func() {
+		if err := inventoryConn.Close(); err != nil {
+			log.Printf("failed to close inventoryConn: %v", err)
+		}
+		if err := paymentConn.Close(); err != nil {
+			log.Printf("failed to close paymentConn: %v", err)
+		}
+	}()
+
+	repo := orderRepository.NewOrderRepository()
+	service := orderService.NewOrderService(repo, paymentC, inventoryC)
+	api := orderApi.NewOrderApi(service)
 	ordersServer, err := ordersv1.NewServer(api)
 	if err != nil {
 		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)

@@ -3,12 +3,13 @@ package service
 import (
 	"context"
 
+	"github.com/MoMentalochka/HomeWork/order/internal/model"
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
 )
 
 type OrderService interface {
-	CreateNewOrder(ctx context.Context, req *ordersv1.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error)
-	GetOrderById(_ context.Context, params ordersv1.GetOrderByIdParams) (ordersv1.GetOrderByIdRes, error)
-	OrderCancel(_ context.Context, params ordersv1.OrderCancelParams) (ordersv1.OrderCancelRes, error)
-	OrderPay(ctx context.Context, req ordersv1.OptOrderPayRequest, params ordersv1.OrderPayParams) (ordersv1.OrderPayRes, error)
+	CreateNewOrder(ctx context.Context, req model.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error)
+	GetOrderById(_ context.Context, uuid string) (*model.OrderDto, error)
+	OrderCancel(_ context.Context, uuid string) (ordersv1.OrderCancelRes, error)
+	OrderPay(ctx context.Context, method ordersv1.OptOrderPayRequest, uuid string) (ordersv1.OrderPayRes, error)
 }
