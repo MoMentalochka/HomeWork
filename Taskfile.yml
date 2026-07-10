@@ -26,6 +26,8 @@ vars:
   GRPCURL: '{{.BIN_DIR}}/grpcurl'
   MOCKERY: "{{.BIN_DIR}}/mockery"
 
+  COVERAGE_DIR: '{{.ROOT_DIR}}/coverage'
+
   NODE_MODULES_DIR: '{{.ROOT_DIR}}/node_modules/.bin'
   REDOCLY: '{{.NODE_MODULES_DIR}}/redocly'
 
@@ -265,7 +267,7 @@ tasks:
           OUTFILE="{{.COVERAGE_DIR}}/$mod.out"
           if [ -f "$OUTFILE" ]; then
             printf " • %s: " "$mod"
-            go tool cover -func="$OUTFILE" | tail -n1
+            go tool cover -func="$OUTFILE" | tail -n 1
           fi
         done
         
@@ -279,7 +281,7 @@ tasks:
         
         echo
         echo "🧾 Общее покрытие по всем модулям:"
-        go tool cover -func={{.COVERAGE_DIR}}/{{.COVERAGE_FILE}} | tail -n1
+        go tool cover -func={{.COVERAGE_DIR}}/{{.COVERAGE_FILE}} | tail -n 1
 
   coverage:html:
     desc: "Генерирует HTML-отчёт покрытия и открывает его в браузере"

@@ -5,6 +5,7 @@ require (
 	github.com/google/uuid v1.6.0
 	google.golang.org/grpc v1.82.0
 	github.com/stretchr/testify v1.10.0
+	github.com/brianvoe/gofakeit/v7 v7.2.1
 )
 
 require (
