@@ -17,7 +17,7 @@ func (a *api) ListParts(ctx context.Context, req *inventoryV1.ListPartsRequest) 
 		if errors.Is(err, model.ErrPartNotFound) {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
-		return &inventoryV1.ListPartsResponse{}, status.Errorf(codes.Internal, err.Error())
+		return &inventoryV1.ListPartsResponse{}, err
 	}
 	return &inventoryV1.ListPartsResponse{Parts: converter.ModelsToParts(parts)}, nil
 }

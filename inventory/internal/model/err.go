@@ -1,5 +1,7 @@
 package model
 
-import "errors"
+import (
+	"fmt"
+)
 
-var ErrPartNotFound = errors.New("part not found")
+var ErrPartNotFound = fmt.Errorf("part not found")

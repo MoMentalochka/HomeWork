@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func (s *ServiceSuite) TestGetPartsNotFound() {
+func (s *ServiceSuite) TestListPartsError() {
 
 	var (
 		uuid    = gofakeit.UUID()
@@ -22,7 +22,7 @@ func (s *ServiceSuite) TestGetPartsNotFound() {
 	s.Require().True(errors.Is(err, model.ErrPartNotFound))
 }
 
-func (s *ServiceSuite) TestGetPartsSuccess() {
+func (s *ServiceSuite) TestListPartsSuccess() {
 
 	var (
 		uuid    = gofakeit.UUID()
