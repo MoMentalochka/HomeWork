@@ -19,3 +19,15 @@ packages:
   github.com/MoMentalochka/HomeWork/inventory/internal/repository:
     config:
       include-regex: ".*Repository"
+
+  github.com/MoMentalochka/HomeWork/order/internal/service:
+    config:
+      include-regex: ".*Service"
+
+  github.com/MoMentalochka/HomeWork/order/internal/repository:
+    config:
+      include-regex: ".*Repository"
+
+  github.com/MoMentalochka/HomeWork/order/internal/client/grpc:
+    config:
+      include-regex: ".*Client"
