@@ -27,6 +27,7 @@ vars:
   MOCKERY: "{{.BIN_DIR}}/mockery"
 
   COVERAGE_DIR: '{{.ROOT_DIR}}/coverage'
+  COVERAGE_FILE: total.out
 
   NODE_MODULES_DIR: '{{.ROOT_DIR}}/node_modules/.bin'
   REDOCLY: '{{.NODE_MODULES_DIR}}/redocly'
@@ -36,7 +37,7 @@ vars:
 
   OPEN_API_FILES: '{{.ROOT_DIR}}/shared/api/bundles'
 
-  MODULES: order payment order
+  MODULES: order payment inventory
 
 tasks:
   install-formatters:

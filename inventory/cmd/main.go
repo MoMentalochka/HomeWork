@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	inventoryApi "github.com/MoMentalochka/HomeWork/inventory/internal/api/inventoty/v1"
+	inventoryApi "github.com/MoMentalochka/HomeWork/inventory/internal/api/inventory/v1"
 	inventoryRepository "github.com/MoMentalochka/HomeWork/inventory/internal/repository/inventory"
 	inventoryService "github.com/MoMentalochka/HomeWork/inventory/internal/service/inventory"
 	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"

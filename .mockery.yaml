@@ -12,6 +12,10 @@ packages:
     config:
       include-regex: ".*Service"
 
-  github.com/MoMentalochka/HomeWork/payment/internal/api:
+  github.com/MoMentalochka/HomeWork/inventory/internal/service:
+    config:
+      include-regex: ".*Service"
+
+  github.com/MoMentalochka/HomeWork/inventory/internal/repository:
     config:
       include-regex: ".*Repository"
