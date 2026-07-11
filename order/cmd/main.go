@@ -69,7 +69,7 @@ func main() {
 	api := orderApi.NewOrderApi(service)
 	ordersServer, err := ordersv1.NewServer(api)
 	if err != nil {
-		fmt.Printf("ошибка создания сервера OpenAPI: %v", err)
+		log.Printf("ошибка создания сервера OpenAPI: %v", err)
 	}
 
 	r := chi.NewRouter()
