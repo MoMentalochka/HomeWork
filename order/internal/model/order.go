@@ -89,7 +89,6 @@ type OrderDto struct {
 }
 
 func (*OrderDto) getOrderByIdRes() {
-
 }
 
 type GetOrderByIdRes interface {

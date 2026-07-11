@@ -19,9 +19,7 @@ import (
 const grpcPort = 50051
 
 func main() {
-
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
-
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 		return
@@ -29,7 +27,7 @@ func main() {
 	defer func() {
 		err := lis.Close()
 		if err != nil {
-			fmt.Printf("Error closing listener: %s\n", err)
+			log.Printf("Error closing listener: %s\n", err)
 		}
 	}()
 

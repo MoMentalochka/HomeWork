@@ -6,7 +6,6 @@ import (
 )
 
 func (s *ServiceSuite) TestPayOrderValidUuid() {
-
 	res := s.service.PayOrder(s.ctx, &model.PayOrderRequest{})
 
 	s.Require().NoError(uuid.Validate(res.TransactionUuid))

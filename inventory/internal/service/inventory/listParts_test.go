@@ -8,7 +8,6 @@ import (
 )
 
 func (s *ServiceSuite) TestListPartsError() {
-
 	var (
 		uuid    = gofakeit.UUID()
 		filters = &model.PartsFilter{Uuids: []string{uuid}}
@@ -23,7 +22,6 @@ func (s *ServiceSuite) TestListPartsError() {
 }
 
 func (s *ServiceSuite) TestListPartsSuccess() {
-
 	var (
 		uuid    = gofakeit.UUID()
 		filters = &model.PartsFilter{Uuids: []string{uuid}}
@@ -39,5 +37,4 @@ func (s *ServiceSuite) TestListPartsSuccess() {
 	s.Require().NoError(err)
 	s.Require().Len(res, 1)
 	s.Require().True(res[0].Uuid == uuid)
-
 }

@@ -35,7 +35,6 @@ const (
 )
 
 func main() {
-
 	//	Payment Client
 	paymentConn, err := grpc.NewClient(
 		fmt.Sprintf("localhost:%s", paymentPort),
@@ -70,7 +69,7 @@ func main() {
 	api := orderApi.NewOrderApi(service)
 	ordersServer, err := ordersv1.NewServer(api)
 	if err != nil {
-		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
+		fmt.Printf("ошибка создания сервера OpenAPI: %v", err)
 	}
 
 	r := chi.NewRouter()
@@ -114,5 +113,4 @@ func main() {
 	}
 
 	log.Println("✅ Сервер остановлен")
-
 }

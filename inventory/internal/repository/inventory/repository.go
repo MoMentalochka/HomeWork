@@ -12,7 +12,6 @@ type repository struct {
 }
 
 func NewRepository() *repository {
-
 	repo := repository{
 		data: make(map[string]repomodel.Part),
 	}

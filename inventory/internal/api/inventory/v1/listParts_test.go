@@ -10,7 +10,6 @@ import (
 )
 
 func (s *APISuite) TestListPartsSuccess() {
-
 	var (
 		uuid    = gofakeit.UUID()
 		filters = &inventoryv1.PartsFilter{Uuids: []string{uuid}}
@@ -28,7 +27,6 @@ func (s *APISuite) TestListPartsSuccess() {
 	s.Require().NoError(err)
 	s.Require().Len(res.Parts, 1)
 	s.Require().True(res.Parts[0].Uuid == uuid)
-
 }
 
 func (s *APISuite) TestListPartsError() {

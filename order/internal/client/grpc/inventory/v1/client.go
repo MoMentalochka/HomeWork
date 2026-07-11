@@ -18,7 +18,6 @@ func NewInventoryClient(generatedClient inventoryv1.InventoryServiceClient) *inv
 
 func (c *inventoryClient) ListParts(ctx context.Context, filters model.PartsFilter) ([]model.Part, error) {
 	res, err := c.generatedClient.ListParts(ctx, &inventoryv1.ListPartsRequest{Filter: converter.ModelPartsFilterToProtoPartsFilter(filters)})
-
 	if err != nil {
 		return nil, err
 	}

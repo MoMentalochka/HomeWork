@@ -6,7 +6,6 @@ import (
 )
 
 func PartToModel(part repomodel.Part) model.Part {
-
 	var dimensions *model.Dimensions
 	if part.Dimensions != nil {
 		dimensions = PartDimensionsToModel(part.Dimensions)
@@ -33,27 +32,6 @@ func PartToModel(part repomodel.Part) model.Part {
 	}
 }
 
-//func PartCategoryToRepoModel(category model.Category) repomodel.Category {
-//	return repomodel.Category(category)
-//}
-//
-//func PartDimensionsToRepoModel(dimensions *model.Dimensions) *repomodel.Dimensions {
-//	return &repomodel.Dimensions{
-//		Width:  dimensions.Width,
-//		Height: dimensions.Height,
-//		Weight: dimensions.Weight,
-//		Length: dimensions.Length,
-//	}
-//}
-//
-//func PartManufacturerToRepoModel(manufacturer *model.Manufacturer) *repomodel.Manufacturer {
-//	return &repomodel.Manufacturer{
-//		Name:    manufacturer.Name,
-//		Country: manufacturer.Country,
-//		Website: manufacturer.Website,
-//	}
-//}
-
 func PartDimensionsToModel(dimensions *repomodel.Dimensions) *model.Dimensions {
 	return &model.Dimensions{
 		Width:  dimensions.Width,
@@ -77,10 +55,8 @@ func ModelFiltersToRepoModelFilters(filters *model.PartsFilter) *repomodel.Parts
 	}
 	var categories []string
 
-	if filters.Categories != nil && len(filters.Categories) > 0 {
-		for _, category := range filters.Categories {
-			categories = append(categories, category)
-		}
+	if filters.Categories != nil {
+		categories = append(categories, filters.Categories...)
 	}
 
 	return &repomodel.PartsFilter{

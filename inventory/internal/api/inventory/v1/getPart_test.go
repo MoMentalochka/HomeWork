@@ -9,7 +9,6 @@ import (
 )
 
 func (s *APISuite) TestGetPartSuccess() {
-
 	var (
 		uuid = "1"
 		name = gofakeit.Name()
@@ -29,11 +28,9 @@ func (s *APISuite) TestGetPartSuccess() {
 	s.Require().NotNil(res.Part)
 	s.Require().Equal(res.Part.Uuid, uuid)
 	s.Require().Equal(res.Part.Name, modelPart.Name)
-
 }
 
 func (s *APISuite) TestGetPartNotFound() {
-
 	var (
 		uuid = "1"
 		name = gofakeit.Name()
@@ -55,7 +52,6 @@ func (s *APISuite) TestGetPartNotFound() {
 }
 
 func (s *APISuite) TestGetPartError() {
-
 	var (
 		uuid = "1"
 		name = gofakeit.Name()
@@ -74,5 +70,4 @@ func (s *APISuite) TestGetPartError() {
 	s.Require().Error(err)
 	s.Require().Nil(res.Part)
 	s.Require().False(errors.Is(err, model.ErrPartNotFound))
-
 }

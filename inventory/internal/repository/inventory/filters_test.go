@@ -35,21 +35,17 @@ var (
 )
 
 func TestEmptyFilters(t *testing.T) {
-
 	require.True(t, isEmptyFilter(&repomodel.PartsFilter{}))
 	require.Len(t, repomodel.PartsFilter{}.Tags, 0)
 }
 
 func TestFilteredParts(t *testing.T) {
-
 	FilteredParts := filteredParts(parts, repoFilters)
 
 	require.Len(t, FilteredParts, 1)
-
 }
 
 func TestFilterByTags(t *testing.T) {
-
 	FilteredParts := filterByTags(parts, []string{"ag"})
 
 	require.Len(t, FilteredParts, 1)
@@ -60,7 +56,6 @@ func TestFilterByTags(t *testing.T) {
 }
 
 func TestFilterByManufacturerCountries(t *testing.T) {
-
 	FilteredParts := filterByManufacturerCountries(parts, []string{"France"})
 
 	require.Len(t, FilteredParts, 2)
@@ -70,7 +65,6 @@ func TestFilterByManufacturerCountries(t *testing.T) {
 }
 
 func TestFilterByUUID(t *testing.T) {
-
 	FilteredParts := filterByUUID(parts, []string{uuid})
 
 	require.Len(t, FilteredParts, 1)
@@ -81,7 +75,6 @@ func TestFilterByUUID(t *testing.T) {
 }
 
 func TestFilterByName(t *testing.T) {
-
 	FilteredParts := filterByName(parts, []string{"fff"})
 
 	require.Len(t, FilteredParts, 0)
@@ -89,11 +82,9 @@ func TestFilterByName(t *testing.T) {
 	FilteredParts = filterByName(parts, []string{"Пушка 1"})
 
 	require.True(t, FilteredParts[0].Name == "Пушка 1")
-
 }
 
 func TestFilterByCategory(t *testing.T) {
-
 	FilteredParts := filterByCategory(parts, []string{"Пушки"})
 
 	require.Len(t, FilteredParts, 1)
@@ -101,5 +92,4 @@ func TestFilterByCategory(t *testing.T) {
 	FilteredParts = filterByCategory(parts, []string{"Колёса", "Пушки"})
 
 	require.Len(t, FilteredParts, 2)
-
 }

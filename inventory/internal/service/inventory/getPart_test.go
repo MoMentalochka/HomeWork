@@ -9,7 +9,6 @@ import (
 )
 
 func (s *ServiceSuite) TestGetPartSuccess() {
-
 	var (
 		uuid = gofakeit.UUID()
 		name = gofakeit.Name()
@@ -27,11 +26,9 @@ func (s *ServiceSuite) TestGetPartSuccess() {
 	s.Require().NoError(err)
 	s.Require().Equal(uuid, part.Uuid)
 	s.Require().Equal(name, part.Name)
-
 }
 
 func (s *ServiceSuite) TestGetPartNotFound() {
-
 	var (
 		uuid     = gofakeit.UUID()
 		repoPart = repomodel.Part{}
@@ -47,7 +44,6 @@ func (s *ServiceSuite) TestGetPartNotFound() {
 }
 
 func (s *ServiceSuite) TestGetPartError() {
-
 	var (
 		uuid     = gofakeit.UUID()
 		repoPart = repomodel.Part{}

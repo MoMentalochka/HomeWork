@@ -16,6 +16,7 @@ shared/api/bundles
 # Code coverage profiles and other test artifacts
 *.out
 coverage.*
+mocks
 *.coverprofile
 profile.cov
 

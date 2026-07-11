@@ -22,7 +22,6 @@ func NewOrderApi(service service.OrderService) *orderApi {
 }
 
 func (a *orderApi) CreateNewOrder(ctx context.Context, req *ordersv1.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error) {
-
 	res, err := a.orderService.CreateNewOrder(ctx,
 		model.CreateOrderRequest{
 			UserUUID:  req.UserUUID,

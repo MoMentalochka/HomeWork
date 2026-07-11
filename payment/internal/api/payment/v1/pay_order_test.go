@@ -7,7 +7,6 @@ import (
 )
 
 func (s *APISuite) TestPayOrderCorrectUuid() {
-
 	var (
 		request = &payment_v1.PayOrderRequest{
 			PaymentMethod: payment_v1.PaymentMethod_PAYMENT_METHOD_CARD,

@@ -10,7 +10,6 @@ import (
 )
 
 func (s *service) PayOrder(_ context.Context, _ *model.PayOrderRequest) *payment_v1.PayOrderResponse {
-
 	id := uuid.New().String()
 	log.Printf("Оплата прошла успешно, transaction_uuid: %s", id)
 

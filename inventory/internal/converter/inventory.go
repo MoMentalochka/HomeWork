@@ -7,7 +7,6 @@ import (
 )
 
 func ModelToPart(part model.Part) *inventoryv1.Part {
-
 	category, ok := inventoryv1.Category_value[string(part.Category)]
 	if !ok {
 		category = int32(inventoryv1.Category_CATEGORY_UNKNOWN_UNSPECIFIED)
@@ -71,7 +70,7 @@ func PartsFilterToModel(filters *inventoryv1.PartsFilter) *model.PartsFilter {
 	}
 	var categories []string
 
-	if filters.Categories != nil && len(filters.Categories) > 0 {
+	if filters.Categories != nil {
 		for _, category := range filters.Categories {
 			categories = append(categories, string(category))
 		}

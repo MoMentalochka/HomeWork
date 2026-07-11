@@ -28,16 +28,13 @@ func NewOrderService(rep repository.OrderRepository, paymentClient grpc.PaymentC
 }
 
 func (s *orderService) CreateNewOrder(ctx context.Context, req model.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error) {
-
 	parts, err := s.inventoryClient.ListParts(ctx, model.PartsFilter{Uuids: req.PartUuids})
-
 	if err != nil {
 		return &ordersv1.CreateOrderResponse{}, err
 	}
 
 	total := 0.0
 	for _, part := range parts {
-
 		total += part.Price
 	}
 
@@ -54,7 +51,6 @@ func (s *orderService) CreateNewOrder(ctx context.Context, req model.CreateOrder
 }
 
 func (s *orderService) GetOrderById(_ context.Context, uuid string) (*model.OrderDto, error) {
-
 	order := s.store.GetOrder(uuid)
 	if order == nil {
 		return nil, model.ErrPartNotFound
@@ -106,7 +102,6 @@ func (s *orderService) OrderPay(ctx context.Context, req ordersv1.OptOrderPayReq
 	}
 
 	transactionUuid, err := s.paymentClient.PayOrder(ctx, &payRequest)
-
 	if err != nil {
 		return nil, err
 	}
