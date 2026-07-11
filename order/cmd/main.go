@@ -76,7 +76,6 @@ func NewOrderHandler(store *OrderStore, payment paymentv1.PaymentServiceClient, 
 }
 
 func (h *OrderHandler) CreateNewOrder(ctx context.Context, req *ordersv1.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error) {
-
 	for _, partUuid := range req.PartUuids {
 		_, err := h.inventoryClient.GetPart(ctx, &inventoryv1.GetPartRequest{Uuid: partUuid})
 		if err != nil {
@@ -96,7 +95,6 @@ func (h *OrderHandler) CreateNewOrder(ctx context.Context, req *ordersv1.CreateO
 }
 
 func (h *OrderHandler) GetOrderById(_ context.Context, params ordersv1.GetOrderByIdParams) (ordersv1.GetOrderByIdRes, error) {
-
 	order := h.store.GetOrder(params.OrderUUID)
 
 	if order == nil {
@@ -161,7 +159,6 @@ func (h *OrderHandler) OrderPay(ctx context.Context, req ordersv1.OptOrderPayReq
 }
 
 func main() {
-
 	paymentConn, err := grpc.NewClient(
 		fmt.Sprintf("localhost:%s", paymentPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -238,5 +235,4 @@ func main() {
 	}
 
 	log.Println("✅ Сервер остановлен")
-
 }

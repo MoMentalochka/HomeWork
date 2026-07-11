@@ -11,11 +11,10 @@ import (
 	"syscall"
 
 	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
-
-	"google.golang.org/grpc"
 )
 
 const grpcPort = 50051
@@ -45,6 +44,7 @@ func (s *inventoryService) GetPart(_ context.Context, req *inventoryV1.GetPartRe
 
 	return &inventoryV1.GetPartResponse{Part: part}, nil
 }
+
 func (s *inventoryService) ListParts(_ context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
 	filteredParts := make([]*inventoryV1.Part, 0, len(s.parts))
 	if req.Filter == nil {
@@ -116,13 +116,11 @@ func (s *inventoryService) ListParts(_ context.Context, req *inventoryV1.ListPar
 		Parts: filteredParts,
 	}, nil
 
-	//return nil, status.Errorf(codes.Unimplemented, "method ListParts in progress")
+	// return nil, status.Errorf(codes.Unimplemented, "method ListParts in progress")
 }
 
 func main() {
-
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
-
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 		return

@@ -26,6 +26,7 @@ func (s *PaymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequ
 	log.Printf("Оплата прошла успешно, transaction_uuid: %s", id)
 	return &paymentV1.PayOrderResponse{TransactionUuid: id}, nil
 }
+
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
 	if err != nil {
