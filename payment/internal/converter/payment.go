@@ -12,9 +12,3 @@ func ProtoPayOrderRequestToModel(req *payment_v1.PayOrderRequest) *model.PayOrde
 		PaymentMethod: req.PaymentMethod.String(),
 	}
 }
-
-func ModelPayOrderResponse(res *model.PayOrderResponse) *payment_v1.PayOrderResponse {
-	return &payment_v1.PayOrderResponse{
-		TransactionUuid: res.TransactionUuid,
-	}
-}
