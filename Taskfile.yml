@@ -564,3 +564,27 @@ tasks:
         
         echo
         echo "🎉 Все тесты API успешно выполнены!"
+
+
+  up-core:
+    dir: "deploy/compose/core"
+    cmd: "docker compose up --build -d"
+  down-core:
+    dir: "deploy/compose/core"
+    cmd: "docker compose down"
+
+  up-order-db:
+    dir: "./deploy/compose/order"
+    deps: ["up-core"]
+    cmd: "docker compose up --build -d"
+  down-order-db:
+    dir: "./deploy/compose/order"
+    cmd: "docker compose down"
+
+  up-inventory-db:
+    dir: "./deploy/compose/inventory"
+    deps: ["up-core"]
+    cmd: "docker compose up --build -d"
+  down-inventory-db:
+    dir: "./deploy/compose/inventory"
+    cmd: "docker compose down"
