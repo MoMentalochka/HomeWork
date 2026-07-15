@@ -4,9 +4,9 @@ services:
     container_name: postgres_order
 
     environment: # Переменные окружения, используемые при запуске контейнера
-      POSTGRES_DB: test # Имя базы данных, которая будет создана при запуске
-      POSTGRES_USER: user # Имя пользователя, создаваемого в базе
-      POSTGRES_PASSWORD: 12345 # Пароль для указанного пользователя
+      POSTGRES_DB: postgres # Имя базы данных, которая будет создана при запуске
+      POSTGRES_USER: admin # Имя пользователя, создаваемого в базе
+      POSTGRES_PASSWORD: admin # Пароль для указанного пользователя
 
     volumes:
       - postgres_http_data:/var/lib/postgresql/data
