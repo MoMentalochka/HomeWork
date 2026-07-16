@@ -34,7 +34,6 @@ func (s *orderService) CreateNewOrder(ctx context.Context, req model.CreateOrder
 		if err != nil {
 			return &ordersv1.CreateOrderResponse{}, fmt.Errorf("failed to get part by uuid %s: %w", id, err)
 		}
-		println("Нашёл часть", id)
 		total += part.Price
 	}
 
@@ -82,7 +81,13 @@ func (s *orderService) OrderCancel(_ context.Context, uuid string) (ordersv1.Ord
 			Message: fmt.Sprintf("Order with uuid '%s' is already paid or cancelled", uuid),
 		}, nil
 	}
+
 	order.Status = "CANCELLED"
+	err = s.store.Update(uuid, order)
+	if err != nil {
+		return &ordersv1.OrderCancelResponse{}, err
+	}
+
 	return &ordersv1.OrderCancelResponse{TransactionUUID: order.TransactionUUID}, nil
 }
 
@@ -120,5 +125,9 @@ func (s *orderService) OrderPay(ctx context.Context, req ordersv1.OptOrderPayReq
 	order.Status = "PAID"
 	order.PaymentMethod = string(req.Value.PaymentMethod)
 	order.TransactionUUID = transactionUuid
+	err = s.store.Update(uuid, order)
+	if err != nil {
+		return &ordersv1.OrderPayResponse{}, err
+	}
 	return &ordersv1.OrderPayResponse{TransactionUUID: order.TransactionUUID}, nil
 }

@@ -56,7 +56,7 @@ func (a *orderApi) OrderCancel(ctx context.Context, params ordersv1.OrderCancelP
 func (a *orderApi) OrderPay(ctx context.Context, req ordersv1.OptOrderPayRequest, params ordersv1.OrderPayParams) (ordersv1.OrderPayRes, error) {
 	res, err := a.orderService.OrderPay(ctx, req, params.OrderUUID)
 	if err != nil {
-		return &ordersv1.OrderPayResponse{}, nil
+		return &ordersv1.OrderPayResponse{}, err
 	}
 	return res, nil
 }
