@@ -15,6 +15,7 @@ import (
 	orderApi "github.com/MoMentalochka/HomeWork/order/internal/api/order/v1"
 	inventoryClient "github.com/MoMentalochka/HomeWork/order/internal/client/grpc/inventory/v1"
 	paymentClient "github.com/MoMentalochka/HomeWork/order/internal/client/grpc/payment/v1"
+	"github.com/MoMentalochka/HomeWork/order/internal/migrator"
 	orderRepository "github.com/MoMentalochka/HomeWork/order/internal/repository/order"
 	orderService "github.com/MoMentalochka/HomeWork/order/internal/service/order"
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
@@ -22,6 +23,9 @@ import (
 	paymentv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -64,7 +68,52 @@ func main() {
 		}
 	}()
 
-	repo := orderRepository.NewOrderRepository()
+	// Init DB Connection
+	ctx := context.Background()
+
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+		return
+	}
+
+	dbUri := os.Getenv("DB_URI")
+	if dbUri == "" {
+		log.Println("DB_URI environment variable not set")
+		return
+	}
+	// Создаем соединение с базой данных
+	con, err := pgx.Connect(ctx, dbUri)
+	if err != nil {
+		log.Printf("failed to connect: %v\n", err)
+		return
+	}
+	defer func() {
+		cerr := con.Close(ctx)
+		if cerr != nil {
+			log.Printf("failed to close connection: %v", cerr)
+		}
+	}()
+
+	// Проверяем, что соединение с базой установлено
+	err = con.Ping(ctx)
+	if err != nil {
+		log.Printf("failed to ping: %v\n", err)
+		return
+	}
+	// Инициализируем мигратор
+	migrationDir := os.Getenv("MIGRATIONS_DIR")
+	migrationRunner := migrator.NewMigrator(stdlib.OpenDB(*con.Config().Copy()), migrationDir)
+
+	// Раскатываем миграции
+	err = migrationRunner.Up()
+	if err != nil {
+		log.Printf("failed to run migrations: %v\n", err)
+		return
+	}
+
+	// Init Service
+	repo := orderRepository.NewOrderRepository(stdlib.OpenDB(*con.Config().Copy()))
 	service := orderService.NewOrderService(repo, paymentC, inventoryC)
 	api := orderApi.NewOrderApi(service)
 	ordersServer, err := ordersv1.NewServer(api)

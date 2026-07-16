@@ -46,12 +46,18 @@ func (s *orderService) CreateNewOrder(ctx context.Context, req model.CreateOrder
 		Status:     converter.ProtoStatusToModel(ordersv1.StatusPENDINGPAYMENT),
 	}
 
-	s.store.AddOrder(order)
+	err = s.store.AddOrder(order)
+	if err != nil {
+		return &ordersv1.CreateOrderResponse{}, err
+	}
 	return &ordersv1.CreateOrderResponse{OrderUUID: order.OrderUUID, TotalPrice: total}, nil
 }
 
 func (s *orderService) GetOrderById(_ context.Context, uuid string) (*model.OrderDto, error) {
-	order := s.store.GetOrder(uuid)
+	order, err := s.store.GetOrder(uuid)
+	if err != nil {
+		return &model.OrderDto{}, err
+	}
 	if order == nil {
 		return nil, model.ErrPartNotFound
 	}
@@ -60,7 +66,10 @@ func (s *orderService) GetOrderById(_ context.Context, uuid string) (*model.Orde
 }
 
 func (s *orderService) OrderCancel(_ context.Context, uuid string) (ordersv1.OrderCancelRes, error) {
-	order := s.store.GetOrder(uuid)
+	order, err := s.store.GetOrder(uuid)
+	if err != nil {
+		return &ordersv1.OrderCancelResponse{}, err
+	}
 	if order == nil {
 		return &ordersv1.NotFound{
 			Code:    404,
@@ -78,7 +87,10 @@ func (s *orderService) OrderCancel(_ context.Context, uuid string) (ordersv1.Ord
 }
 
 func (s *orderService) OrderPay(ctx context.Context, req ordersv1.OptOrderPayRequest, uuid string) (ordersv1.OrderPayRes, error) {
-	order := s.store.GetOrder(uuid)
+	order, err := s.store.GetOrder(uuid)
+	if err != nil {
+		return &ordersv1.OrderPayResponse{}, err
+	}
 
 	if order == nil {
 		return &ordersv1.NotFound{

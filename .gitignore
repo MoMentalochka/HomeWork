@@ -28,7 +28,7 @@ go.work
 go.work.sum
 
 # env file
-.env
+order/.env
 .idea
 node_modules
 package-lock.json
