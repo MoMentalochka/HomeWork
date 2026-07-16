@@ -28,13 +28,13 @@ func NewOrderService(rep repository.OrderRepository, paymentClient grpc.PaymentC
 }
 
 func (s *orderService) CreateNewOrder(ctx context.Context, req model.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error) {
-	parts, err := s.inventoryClient.ListParts(ctx, model.PartsFilter{Uuids: req.PartUuids})
-	if err != nil {
-		return &ordersv1.CreateOrderResponse{}, err
-	}
-
 	total := 0.0
-	for _, part := range parts {
+	for _, id := range req.PartUuids {
+		part, err := s.inventoryClient.GetPart(ctx, id)
+		if err != nil {
+			return &ordersv1.CreateOrderResponse{}, fmt.Errorf("failed to get part by uuid %s: %w", id, err)
+		}
+		println("Нашёл часть", id)
 		total += part.Price
 	}
 
@@ -46,7 +46,7 @@ func (s *orderService) CreateNewOrder(ctx context.Context, req model.CreateOrder
 		Status:     converter.ProtoStatusToModel(ordersv1.StatusPENDINGPAYMENT),
 	}
 
-	err = s.store.AddOrder(order)
+	err := s.store.Create(order)
 	if err != nil {
 		return &ordersv1.CreateOrderResponse{}, err
 	}
@@ -54,7 +54,7 @@ func (s *orderService) CreateNewOrder(ctx context.Context, req model.CreateOrder
 }
 
 func (s *orderService) GetOrderById(_ context.Context, uuid string) (*model.OrderDto, error) {
-	order, err := s.store.GetOrder(uuid)
+	order, err := s.store.Get(uuid)
 	if err != nil {
 		return &model.OrderDto{}, err
 	}
@@ -66,7 +66,7 @@ func (s *orderService) GetOrderById(_ context.Context, uuid string) (*model.Orde
 }
 
 func (s *orderService) OrderCancel(_ context.Context, uuid string) (ordersv1.OrderCancelRes, error) {
-	order, err := s.store.GetOrder(uuid)
+	order, err := s.store.Get(uuid)
 	if err != nil {
 		return &ordersv1.OrderCancelResponse{}, err
 	}
@@ -87,7 +87,7 @@ func (s *orderService) OrderCancel(_ context.Context, uuid string) (ordersv1.Ord
 }
 
 func (s *orderService) OrderPay(ctx context.Context, req ordersv1.OptOrderPayRequest, uuid string) (ordersv1.OrderPayRes, error) {
-	order, err := s.store.GetOrder(uuid)
+	order, err := s.store.Get(uuid)
 	if err != nil {
 		return &ordersv1.OrderPayResponse{}, err
 	}

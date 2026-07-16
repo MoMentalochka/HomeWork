@@ -16,11 +16,11 @@ func NewInventoryClient(generatedClient inventoryv1.InventoryServiceClient) *inv
 	return &inventoryClient{generatedClient: generatedClient}
 }
 
-func (c *inventoryClient) ListParts(ctx context.Context, filters model.PartsFilter) ([]model.Part, error) {
-	res, err := c.generatedClient.ListParts(ctx, &inventoryv1.ListPartsRequest{Filter: converter.ModelPartsFilterToProtoPartsFilter(filters)})
+func (c *inventoryClient) GetPart(ctx context.Context, uuid string) (model.Part, error) {
+	res, err := c.generatedClient.GetPart(ctx, &inventoryv1.GetPartRequest{Uuid: uuid})
 	if err != nil {
-		return nil, err
+		return model.Part{}, err
 	}
 
-	return converter.PartsToModelParts(res.Parts), nil
+	return converter.ProtoPartToModelPart(res.Part), nil
 }

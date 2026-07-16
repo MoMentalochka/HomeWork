@@ -21,13 +21,13 @@ const grpcPort = 50051
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Printf("failed to listen: %v", err)
 		return
 	}
 	defer func() {
-		err := lis.Close()
-		if err != nil {
-			log.Printf("Error closing listener: %s\n", err)
+		cerr := lis.Close()
+		if cerr != nil {
+			log.Printf("Error closing listener: %s\n", cerr)
 		}
 	}()
 

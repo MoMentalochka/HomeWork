@@ -12,5 +12,5 @@ type PaymentClient interface {
 }
 
 type InventoryClient interface {
-	ListParts(ctx context.Context, filters model.PartsFilter) ([]model.Part, error)
+	GetPart(ctx context.Context, uuid string) (model.Part, error)
 }

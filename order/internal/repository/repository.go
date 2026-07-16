@@ -5,6 +5,7 @@ import (
 )
 
 type OrderRepository interface {
-	AddOrder(order *model.OrderDto) error
-	GetOrder(id string) (*model.OrderDto, error)
+	Create(order *model.OrderDto) error
+	Get(id string) (*model.OrderDto, error)
+	Update(id string, data model.OrderDto) (*model.OrderDto, error)
 }
