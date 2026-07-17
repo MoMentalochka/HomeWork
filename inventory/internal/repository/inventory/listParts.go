@@ -2,25 +2,36 @@ package inventory
 
 import (
 	"context"
+	"errors"
+	"log"
 
 	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
 	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-func (r *repository) ListParts(_ context.Context, filters *repomodel.PartsFilter) ([]*model.Part, error) {
-	//r.mu.Lock()
-	//defer r.mu.Unlock()
-	//
-	//parts := make([]*model.Part, 0, len(r.data))
-	//
-	//for _, v := range r.data {
-	//	parts = append(parts, new(converter.PartToModel(v)))
-	//}
-	//
-	//parts = filteredParts(parts, filters)
-	//
-	//if parts == nil {
-	//	return []*model.Part{}, model.ErrPartNotFound
-	//}
-	return []*model.Part{}, nil
+func (r *repository) ListParts(ctx context.Context, filters *repomodel.PartsFilter) ([]*model.Part, error) {
+	//преобразуем модель фильтра в фильтр для базы
+	filter := bsonFilterFromPartsFilter(filters)
+	//Достаём данные из базы
+	cursor, err := r.data.Find(ctx, filter)
+	if err != nil {
+		if errors.Is(cursor.Err(), mongo.ErrNoDocuments) {
+			return nil, model.ErrPartNotFound
+		}
+		return nil, err
+	}
+	defer func() {
+		err = cursor.Close(ctx)
+		if err != nil {
+			log.Printf("failed to close cursor: %v\n", err)
+		}
+	}()
+	//Извлекаем данный в массив
+	var parts []*model.Part
+	err = cursor.All(ctx, &parts)
+	if err != nil {
+		return nil, err
+	}
+	return parts, nil
 }

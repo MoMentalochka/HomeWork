@@ -3,6 +3,7 @@ package inventory
 import (
 	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
 	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func filteredParts(parts []*model.Part, filters *repomodel.PartsFilter) []*model.Part {
@@ -110,4 +111,26 @@ func isEmptyFilter(filter *repomodel.PartsFilter) bool {
 		len(filter.Categories) == 0 &&
 		len(filter.ManufacturerCountries) == 0 &&
 		len(filter.Tags) == 0
+}
+
+func bsonFilterFromPartsFilter(f *repomodel.PartsFilter) bson.M {
+	filter := bson.M{}
+
+	if len(f.Uuids) > 0 {
+		filter["uuid"] = bson.M{"$in": f.Uuids}
+	}
+	if len(f.Names) > 0 {
+		filter["name"] = bson.M{"$in": f.Names}
+	}
+	if len(f.ManufacturerCountries) > 0 {
+		filter["manufacturer"] = bson.M{"$in": f.ManufacturerCountries}
+	}
+	if len(f.Tags) > 0 {
+		filter["tags"] = bson.M{"$in": f.Tags}
+	}
+	if len(f.Categories) > 0 {
+		filter["category"] = bson.M{"$in": f.Categories}
+	}
+
+	return filter
 }

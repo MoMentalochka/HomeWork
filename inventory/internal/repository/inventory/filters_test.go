@@ -34,6 +34,11 @@ var (
 	repoFilters = &repomodel.PartsFilter{Uuids: []string{"3"}, Tags: []string{"gar"}, ManufacturerCountries: []string{"Russia"}}
 )
 
+func TestBsonFilterFromPartsFilter(t *testing.T) {
+	filters := bsonFilterFromPartsFilter(repoFilters)
+	require.Len(t, filters, 3)
+}
+
 func TestEmptyFilters(t *testing.T) {
 	require.True(t, isEmptyFilter(&repomodel.PartsFilter{}))
 	require.Len(t, repomodel.PartsFilter{}.Tags, 0)

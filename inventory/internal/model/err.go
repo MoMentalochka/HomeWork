@@ -1,7 +1,8 @@
 package model
 
 import (
-	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-var ErrPartNotFound = fmt.Errorf("part not found")
+var ErrPartNotFound = status.Error(codes.NotFound, "part not found")
