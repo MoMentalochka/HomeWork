@@ -47,6 +47,7 @@ func main() {
 	if err != nil {
 		log.Printf("failed to connect: %v\n", err)
 	}
+	paymentConn.Connect()
 	paymentC := paymentClient.NewPaymentClient(paymentv1.NewPaymentServiceClient(paymentConn))
 
 	//	Inventory Client
@@ -57,6 +58,7 @@ func main() {
 	if err != nil {
 		log.Printf("failed to connect: %v\n", err)
 	}
+	inventoryConn.Connect()
 	inventoryC := inventoryClient.NewInventoryClient(inventoryv1.NewInventoryServiceClient(inventoryConn))
 
 	defer func() {

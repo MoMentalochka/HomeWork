@@ -3,7 +3,7 @@ services:
     image: mongo:7.0.5
     container_name: mongo_inventory
     environment: # Переменные окружения для инициализации MongoDB
-      MONGO_INITDB_DATABASE: mongo # Имя базы данных, которая будет создана при запуске
+      MONGO_INITDB_DATABASE: inventory_db # Имя базы данных, которая будет создана при запуске
       MONGO_INITDB_ROOT_USERNAME: admin # Имя root-пользователя MongoDB
       MONGO_INITDB_ROOT_PASSWORD: admin # Пароль для root-пользователя
 

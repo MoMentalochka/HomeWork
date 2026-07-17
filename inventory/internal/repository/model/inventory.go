@@ -4,33 +4,35 @@ import (
 	"time"
 
 	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Part struct {
+	Id bson.ObjectID `bson:"_id,omitempty"`
 	//  Уникальный идентификатор детали
-	Uuid string
+	Uuid string `bson:"uuid,omitempty"`
 	//  Название детали
-	Name string
+	Name string `bson:"name,omitempty"`
 	//  	Описание детали
-	Description string
+	Description string `bson:"description"`
 	//  Цена за единицу
-	Price float64
+	Price float64 `bson:"price"`
 	//  Количество на складе
-	StockQuantity int64
+	StockQuantity int64 `bson:"stock_quantity"`
 	//  Категория
-	Category string
+	Category string `bson:"category"`
 	//  Размеры детали
-	Dimensions *Dimensions
+	Dimensions *Dimensions `bson:"dimensions"`
 	//  Информация о производителе
-	Manufacturer *Manufacturer
+	Manufacturer *Manufacturer `bson:"manufacturer"`
 	//  Теги для быстрого поиска
-	Tags []string
+	Tags []string `bson:"tags"`
 	//  Гибкие метаданные
-	Metadata map[string]*inventoryv1.Value
+	Metadata map[string]*inventoryv1.Value `bson:"metadata"`
 	//  Дата создания
-	CreatedAt *time.Time
+	CreatedAt *time.Time `bson:"created_at"`
 	//  	Дата обновления
-	UpdatedAt *time.Time
+	UpdatedAt *time.Time `bson:"updated_at,omitempty"`
 }
 
 type PartsFilter struct {

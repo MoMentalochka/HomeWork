@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -12,6 +13,9 @@ import (
 	inventoryRepository "github.com/MoMentalochka/HomeWork/inventory/internal/repository/inventory"
 	inventoryService "github.com/MoMentalochka/HomeWork/inventory/internal/service/inventory"
 	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -32,8 +36,34 @@ func main() {
 	}()
 
 	s := grpc.NewServer()
+	//подключение к mongo
+	ctx := context.Background()
 
-	repo := inventoryRepository.NewRepository()
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Println("Error with loading env file")
+		return
+	}
+
+	dbUri := os.Getenv("MONGO_URI")
+
+	client, err := mongo.Connect(options.Client().ApplyURI(dbUri))
+
+	defer func() {
+		err = client.Disconnect(ctx)
+		if err != nil {
+			log.Printf("Error closing connection: %s\n", err)
+		}
+
+	}()
+
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		log.Printf("Error pinging database: %s\n", err)
+		return
+	}
+
+	repo := inventoryRepository.NewRepository(client.Database("inventory"))
 	service := inventoryService.NewService(repo)
 	api := inventoryApi.NewApi(service)
 
