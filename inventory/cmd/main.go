@@ -40,7 +40,7 @@ func main() {
 	// подключение к mongo
 	ctx := context.Background()
 
-	err = godotenv.Load(".env")
+	err = godotenv.Load("../.env")
 	if err != nil {
 		log.Println("Error with loading env file")
 		return

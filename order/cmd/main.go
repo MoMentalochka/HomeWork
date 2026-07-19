@@ -74,13 +74,14 @@ func main() {
 	// Init DB Connection
 	ctx := context.Background()
 
-	err = godotenv.Load(".env")
+	err = godotenv.Load("../.env")
 	if err != nil {
 		log.Println("Error loading .env file")
 		return
 	}
 
 	dbUri := os.Getenv("DB_URI")
+
 	if dbUri == "" {
 		log.Println("DB_URI environment variable not set")
 		return
@@ -106,6 +107,8 @@ func main() {
 	}
 	// Инициализируем мигратор
 	migrationDir := os.Getenv("MIGRATIONS_DIR")
+
+	println("DB_URI:", migrationDir)
 	migrationRunner := migrator.NewMigrator(stdlib.OpenDB(*con.Config().Copy()), migrationDir)
 
 	// Раскатываем миграции
