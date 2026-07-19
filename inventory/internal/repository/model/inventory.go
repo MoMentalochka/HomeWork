@@ -3,8 +3,9 @@ package model
 import (
 	"time"
 
-	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 	"go.mongodb.org/mongo-driver/v2/bson"
+
+	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
 type Part struct {

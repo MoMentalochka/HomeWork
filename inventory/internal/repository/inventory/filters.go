@@ -1,9 +1,10 @@
 package inventory
 
 import (
+	"go.mongodb.org/mongo-driver/v2/bson"
+
 	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
 	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
-	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func filteredParts(parts []*model.Part, filters *repomodel.PartsFilter) []*model.Part {

@@ -8,11 +8,12 @@ import (
 	"os/signal"
 	"syscall"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
 	paymentApi "github.com/MoMentalochka/HomeWork/payment/internal/api/payment/v1"
 	paymentService "github.com/MoMentalochka/HomeWork/payment/internal/service/payment"
 	paymentV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 const grpcPort = 50052

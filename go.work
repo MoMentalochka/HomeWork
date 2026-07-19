@@ -1,8 +1,10 @@
-go 1.26.4
+go 1.26.5
 
 use (
 	./inventory
 	./order
 	./payment
 )
+
+
 replace github.com/MoMentalochka/HomeWork/shared => ./shared

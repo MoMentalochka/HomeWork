@@ -4,9 +4,10 @@ import (
 	"context"
 	"log"
 
+	"github.com/google/uuid"
+
 	"github.com/MoMentalochka/HomeWork/payment/internal/model"
 	payment_v1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
-	"github.com/google/uuid"
 )
 
 func (s *service) PayOrder(_ context.Context, _ *model.PayOrderRequest) *payment_v1.PayOrderResponse {

@@ -3,10 +3,11 @@ package v1
 import (
 	"errors"
 
-	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
-	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
+	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
 func (s *APISuite) TestListPartsSuccess() {

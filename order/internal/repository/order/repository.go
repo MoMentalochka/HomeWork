@@ -35,7 +35,6 @@ func (r *orderRepository) Create(order *model.OrderDto) error {
 }
 
 func (r *orderRepository) Get(id string) (*model.OrderDto, error) {
-
 	rows, err := r.db.Query("SELECT * FROM orders WHERE order_uuid = $1", id)
 	if err != nil {
 		log.Printf("failed to select order: %v\n", err)
@@ -100,7 +99,6 @@ func (r *orderRepository) Get(id string) (*model.OrderDto, error) {
 			Status:          Status,
 		}, nil
 	}
-
 }
 
 func (r *orderRepository) Update(id string, data *model.OrderDto) error {

@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/suite"
+
 	clientMocks "github.com/MoMentalochka/HomeWork/order/internal/client/grpc/mocks"
 	"github.com/MoMentalochka/HomeWork/order/internal/repository/mocks"
-	"github.com/stretchr/testify/suite"
 )
 
 type ServiceSuite struct {

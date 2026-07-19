@@ -1,9 +1,10 @@
 package v1
 
 import (
+	"github.com/brianvoe/gofakeit/v7"
+
 	"github.com/MoMentalochka/HomeWork/payment/internal/converter"
 	payment_v1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
-	"github.com/brianvoe/gofakeit/v7"
 )
 
 func (s *APISuite) TestPayOrderCorrectUuid() {

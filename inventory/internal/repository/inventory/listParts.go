@@ -5,15 +5,16 @@ import (
 	"errors"
 	"log"
 
+	"go.mongodb.org/mongo-driver/v2/mongo"
+
 	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
 	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 func (r *repository) ListParts(ctx context.Context, filters *repomodel.PartsFilter) ([]*model.Part, error) {
-	//преобразуем модель фильтра в фильтр для базы
+	// преобразуем модель фильтра в фильтр для базы
 	filter := bsonFilterFromPartsFilter(filters)
-	//Достаём данные из базы
+	// Достаём данные из базы
 	cursor, err := r.data.Find(ctx, filter)
 	if err != nil {
 		if errors.Is(cursor.Err(), mongo.ErrNoDocuments) {
@@ -27,7 +28,7 @@ func (r *repository) ListParts(ctx context.Context, filters *repomodel.PartsFilt
 			log.Printf("failed to close cursor: %v\n", err)
 		}
 	}()
-	//Извлекаем данный в массив
+	// Извлекаем данный в массив
 	var parts []*model.Part
 	err = cursor.All(ctx, &parts)
 	if err != nil {

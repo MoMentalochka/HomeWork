@@ -9,15 +9,16 @@ import (
 	"os/signal"
 	"syscall"
 
-	inventoryApi "github.com/MoMentalochka/HomeWork/inventory/internal/api/inventory/v1"
-	inventoryRepository "github.com/MoMentalochka/HomeWork/inventory/internal/repository/inventory"
-	inventoryService "github.com/MoMentalochka/HomeWork/inventory/internal/service/inventory"
-	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	inventoryApi "github.com/MoMentalochka/HomeWork/inventory/internal/api/inventory/v1"
+	inventoryRepository "github.com/MoMentalochka/HomeWork/inventory/internal/repository/inventory"
+	inventoryService "github.com/MoMentalochka/HomeWork/inventory/internal/service/inventory"
+	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
 const grpcPort = 50051
@@ -36,7 +37,7 @@ func main() {
 	}()
 
 	s := grpc.NewServer()
-	//подключение к mongo
+	// подключение к mongo
 	ctx := context.Background()
 
 	err = godotenv.Load(".env")
@@ -54,7 +55,6 @@ func main() {
 		if err != nil {
 			log.Printf("Error closing connection: %s\n", err)
 		}
-
 	}()
 
 	err = client.Ping(ctx, nil)

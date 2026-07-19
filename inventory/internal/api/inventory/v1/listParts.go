@@ -3,12 +3,13 @@ package v1
 import (
 	"context"
 
-	"github.com/MoMentalochka/HomeWork/inventory/internal/converter"
-	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
-	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 	"github.com/go-faster/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/MoMentalochka/HomeWork/inventory/internal/converter"
+	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
+	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
 func (a *api) ListParts(ctx context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {

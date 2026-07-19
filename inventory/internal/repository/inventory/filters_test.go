@@ -3,10 +3,11 @@ package inventory
 import (
 	"testing"
 
-	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
-	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/require"
+
+	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
+	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
 )
 
 var (

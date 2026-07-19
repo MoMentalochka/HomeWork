@@ -1,10 +1,11 @@
 package inventory
 
 import (
-	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/go-faster/errors"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
 )
 
 func (s *ServiceSuite) TestListPartsError() {

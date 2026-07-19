@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	grpc "github.com/MoMentalochka/HomeWork/order/internal/client/grpc"
 	"github.com/MoMentalochka/HomeWork/order/internal/converter"
 	"github.com/MoMentalochka/HomeWork/order/internal/model"
 	"github.com/MoMentalochka/HomeWork/order/internal/repository"
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
 	paymentv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
-	"github.com/google/uuid"
 )
 
 type orderService struct {

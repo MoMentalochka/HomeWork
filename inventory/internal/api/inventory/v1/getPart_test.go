@@ -3,9 +3,10 @@ package v1
 import (
 	"errors"
 
+	"github.com/brianvoe/gofakeit/v7"
+
 	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
 	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
-	"github.com/brianvoe/gofakeit/v7"
 )
 
 func (s *APISuite) TestGetPartSuccess() {

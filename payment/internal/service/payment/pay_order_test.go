@@ -1,8 +1,9 @@
 package payment
 
 import (
-	"github.com/MoMentalochka/HomeWork/payment/internal/model"
 	"github.com/google/uuid"
+
+	"github.com/MoMentalochka/HomeWork/payment/internal/model"
 )
 
 func (s *ServiceSuite) TestPayOrderValidUuid() {
