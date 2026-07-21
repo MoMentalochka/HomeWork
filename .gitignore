@@ -10,6 +10,7 @@
 
 shared/pkg
 shared/api/bundles
+bin
 # Test binary, built with `go test -c`
 *.test
 
@@ -24,6 +25,7 @@ profile.cov
 # vendor/
 
 # Go workspace file
+go.sum
 go.work
 go.work.sum
 
