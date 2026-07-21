@@ -43,6 +43,7 @@ vars:
 
 
   MODULES: order payment inventory
+  SERVICES: core,order,payment,inventory
 
 tasks:
   install-formatters:
@@ -793,7 +794,6 @@ tasks:
     cmds:
       - task up-order-db
       - task up-inventory-db
-
   down-app:
     cmds:
       - task down-order-db
