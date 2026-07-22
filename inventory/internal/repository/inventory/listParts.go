@@ -15,7 +15,7 @@ func (r *repository) ListParts(ctx context.Context, filters *repomodel.PartsFilt
 	// преобразуем модель фильтра в фильтр для базы
 	filter := bsonFilterFromPartsFilter(filters)
 	// Достаём данные из базы
-	cursor, err := r.data.Find(ctx, filter)
+	cursor, err := r.collection.Find(ctx, filter)
 	if err != nil {
 		if errors.Is(cursor.Err(), mongo.ErrNoDocuments) {
 			return nil, model.ErrPartNotFound
