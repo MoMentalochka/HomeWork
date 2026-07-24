@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/MoMentalochka/HomeWork/order/internal/config"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5"
@@ -21,6 +20,7 @@ import (
 	orderApi "github.com/MoMentalochka/HomeWork/order/internal/api/order/v1"
 	inventoryClient "github.com/MoMentalochka/HomeWork/order/internal/client/grpc/inventory/v1"
 	paymentClient "github.com/MoMentalochka/HomeWork/order/internal/client/grpc/payment/v1"
+	"github.com/MoMentalochka/HomeWork/order/internal/config"
 	"github.com/MoMentalochka/HomeWork/order/internal/migrator"
 	orderRepository "github.com/MoMentalochka/HomeWork/order/internal/repository/order"
 	orderService "github.com/MoMentalochka/HomeWork/order/internal/service/order"

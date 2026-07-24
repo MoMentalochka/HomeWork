@@ -28,7 +28,7 @@ func main() {
 		log.Printf("failed to load config: %v", err)
 		return
 	}
-	var grpcAddress = config.AppConfig().InventoryGRPC.Address()
+	grpcAddress := config.AppConfig().InventoryGRPC.Address()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -81,7 +81,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Printf("🛑 Gracefully shutdown order server %d\n", grpcAddress)
+	log.Printf("🛑 Gracefully shutdown order server %s\n", grpcAddress)
 	s.GracefulStop()
 	log.Printf("✅ Inventory server stopped")
 }

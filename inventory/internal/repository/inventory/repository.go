@@ -20,7 +20,6 @@ type repository struct {
 }
 
 func NewRepository(client *mongo.Client) *repository {
-
 	repo := repository{
 		client:     client,
 		collection: client.Database(databaseName).Collection(collectionName),
@@ -42,17 +41,17 @@ func NewRepository(client *mongo.Client) *repository {
 		log.Printf("Ошибка создания индекса: %v\n", err)
 		return &repo
 	}
+
+	// note1 := repomodel.Part{Uuid: "1", Price: 12.1, Name: "Product 1"}
+	// note2 := repomodel.Part{Uuid: "2", Price: 1.3, Name: "Product 2"}
 	//
-	//note1 := repomodel.Part{Uuid: "1", Price: 12.1, Name: "Product 1"}
-	//note2 := repomodel.Part{Uuid: "2", Price: 1.3, Name: "Product 2"}
-	//
-	//// InsertOne вставляет один документ и возвращает его ID
-	//res, err := repo.collection.InsertMany(ctx, []any{note1, note2})
-	//log.Println(res)
-	//if err != nil {
+	// InsertOne вставляет один документ и возвращает его ID
+	// res, err := repo.collection.InsertMany(ctx, []any{note1, note2})
+	// log.Println(res)
+	// if err != nil {
 	//	log.Printf("Ошибка вставки заметки: %v\n", err)
 	//	return &repo
-	//}
+	// }
 
 	return &repo
 }
