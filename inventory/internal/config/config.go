@@ -27,7 +27,7 @@ func Load(path string) error {
 		return err
 	}
 
-	inverntoryGRPCCfg, err := env.NewInvenoryGRPCConfig()
+	inventoryGRPCCfg, err := env.NewInventoryGRPCConfig()
 	if err != nil {
 		log.Println("failed to load grpc config")
 		return err
@@ -35,7 +35,7 @@ func Load(path string) error {
 
 	appConfig = &config{
 		Mongo:         mongoCfg,
-		InventoryGRPC: inverntoryGRPCCfg,
+		InventoryGRPC: inventoryGRPCCfg,
 	}
 
 	return nil

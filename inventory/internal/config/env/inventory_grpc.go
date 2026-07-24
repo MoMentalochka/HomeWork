@@ -6,17 +6,17 @@ import (
 	"github.com/caarlos0/env/v11"
 )
 
-type inventoryGRPCEnvCongig struct {
+type inventoryGRPCEnvConfig struct {
 	Host string `env:"GRPC_HOST,required"`
 	Port string `env:"GRPC_PORT,required"`
 }
 
 type inventoryGRPCConfig struct {
-	cfg inventoryGRPCEnvCongig
+	cfg inventoryGRPCEnvConfig
 }
 
-func NewInvenoryGRPCConfig() (*inventoryGRPCConfig, error) {
-	var cfg inventoryGRPCEnvCongig
+func NewInventoryGRPCConfig() (*inventoryGRPCConfig, error) {
+	var cfg inventoryGRPCEnvConfig
 	err := env.Parse(&cfg)
 	if err != nil {
 		return nil, err

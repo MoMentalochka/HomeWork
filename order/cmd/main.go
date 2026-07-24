@@ -3,20 +3,18 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/MoMentalochka/HomeWork/order/internal/config"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -31,18 +29,47 @@ import (
 	paymentv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
 )
 
-const (
-	httpPort          = "8080"
-	readHeaderTimeout = 5 * time.Second
-	shutdownTimeout   = 10 * time.Second
-	paymentPort       = "50052"
-	inventoryPort     = "50051"
-)
+const configPath = "../../deploy/compose/order/.env"
 
 func main() {
+	// Init DB Connection
+	ctx := context.Background()
+
+	if err := config.Load(configPath); err != nil {
+		log.Printf("failed to load config: %v", err)
+		return
+	}
+	// Создаем соединение с базой данных
+	con, err := pgx.Connect(ctx, config.AppConfig().Postgres.URI())
+	if err != nil {
+		log.Printf("failed to connect: %v\n", err)
+		return
+	}
+	defer func() {
+		err = con.Close(ctx)
+		if err != nil {
+			log.Printf("failed to close connection: %v", err)
+		}
+	}()
+
+	// Проверяем, что соединение с базой установлено
+	err = con.Ping(ctx)
+	if err != nil {
+		log.Printf("failed to ping: %v\n", err)
+		return
+	}
+	// Инициализируем мигратор
+	migrationRunner := migrator.NewMigrator(stdlib.OpenDB(*con.Config().Copy()), config.AppConfig().Postgres.MigrationsDir())
+	// Раскатываем миграции
+	err = migrationRunner.Up()
+	if err != nil {
+		log.Printf("failed to run migrations: %v\n", err)
+		return
+	}
+
 	//	Payment Client
 	paymentConn, err := grpc.NewClient(
-		fmt.Sprintf("localhost:%s", paymentPort),
+		config.AppConfig().Payment.Address(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -53,7 +80,7 @@ func main() {
 
 	//	Inventory Client
 	inventoryConn, err := grpc.NewClient(
-		fmt.Sprintf("localhost:%s", inventoryPort),
+		config.AppConfig().Inventory.Address(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -70,53 +97,6 @@ func main() {
 			log.Printf("failed to close paymentConn: %v", err)
 		}
 	}()
-
-	// Init DB Connection
-	ctx := context.Background()
-
-	err = godotenv.Load("../.env")
-	if err != nil {
-		log.Println("Error loading .env file")
-		return
-	}
-
-	dbUri := os.Getenv("DB_URI")
-
-	if dbUri == "" {
-		log.Println("DB_URI environment variable not set")
-		return
-	}
-	// Создаем соединение с базой данных
-	con, err := pgx.Connect(ctx, dbUri)
-	if err != nil {
-		log.Printf("failed to connect: %v\n", err)
-		return
-	}
-	defer func() {
-		cerr := con.Close(ctx)
-		if cerr != nil {
-			log.Printf("failed to close connection: %v", cerr)
-		}
-	}()
-
-	// Проверяем, что соединение с базой установлено
-	err = con.Ping(ctx)
-	if err != nil {
-		log.Printf("failed to ping: %v\n", err)
-		return
-	}
-	// Инициализируем мигратор
-	migrationDir := os.Getenv("MIGRATIONS_DIR")
-
-	println("DB_URI:", migrationDir)
-	migrationRunner := migrator.NewMigrator(stdlib.OpenDB(*con.Config().Copy()), migrationDir)
-
-	// Раскатываем миграции
-	err = migrationRunner.Up()
-	if err != nil {
-		log.Printf("failed to run migrations: %v\n", err)
-		return
-	}
 
 	// Init Service
 	repo := orderRepository.NewOrderRepository(stdlib.OpenDB(*con.Config().Copy()))
@@ -138,17 +118,17 @@ func main() {
 	r.Mount("/", ordersServer)
 
 	server := &http.Server{
-		Addr:              net.JoinHostPort("localhost", httpPort),
+		Addr:              config.AppConfig().Http.Address(),
 		Handler:           r,
-		ReadHeaderTimeout: readHeaderTimeout,
+		ReadHeaderTimeout: config.AppConfig().Http.ReadTimeOut(),
 	}
 	// Создаем контекст с таймаутом для остановки сервера
-	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), config.AppConfig().Http.ReadTimeOut())
 	defer cancel()
 
 	// Запускаем сервер в отдельной горутине
 	go func() {
-		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", httpPort)
+		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", config.AppConfig().Http.Port())
 		err = server.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("❌ Ошибка запуска сервера: %v\n", err)
