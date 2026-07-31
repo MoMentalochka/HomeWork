@@ -2,6 +2,7 @@ module github.com/MoMentalochka/HomeWork/inventory
 
 require (
 	github.com/brianvoe/gofakeit/v7 v7.2.1
+	github.com/caarlos0/env/v11 v11.4.1
 	github.com/go-faster/errors v0.7.1
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.11.1
@@ -9,7 +10,6 @@ require (
 )
 
 require (
-	github.com/caarlos0/env/v11 v11.4.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/klauspost/compress v1.18.6 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
@@ -37,6 +37,6 @@ require (
 	google.golang.org/protobuf v1.36.11
 )
 
-go 1.26.4
+go 1.26.5
 
 replace github.com/MoMentalochka/HomeWork/shared => ./shared

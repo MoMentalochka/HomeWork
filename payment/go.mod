@@ -1,6 +1,8 @@
 module github.com/MoMentalochka/HomeWork/payment
 
 require (
+	github.com/MoMentalochka/HomeWork/shared v0.0.0-00010101000000-000000000000
+	github.com/MoMentalochka/HomeWork/platform v0.0.0-00010101000000-000000000000
 	github.com/brianvoe/gofakeit/v7 v7.2.1
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.11.1
@@ -24,6 +26,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-go 1.26.4
+go 1.26.5
 
-replace github.com/MoMentalochka/HomeWork/shared => ./shared
+replace github.com/MoMentalochka/HomeWork/shared => ../shared
+
+replace github.com/MoMentalochka/HomeWork/platform => ../platform

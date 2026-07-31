@@ -7,3 +7,5 @@ use (
 )
 
 replace github.com/MoMentalochka/HomeWork/shared => ./shared
+
+replace github.com/MoMentalochka/HomeWork/platform => ./platform

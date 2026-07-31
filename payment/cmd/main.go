@@ -1,50 +1,52 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
-	"net"
-	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-
-	paymentApi "github.com/MoMentalochka/HomeWork/payment/internal/api/payment/v1"
-	paymentService "github.com/MoMentalochka/HomeWork/payment/internal/service/payment"
-	paymentV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
+	"github.com/MoMentalochka/HomeWork/payment/internal/app"
+	"github.com/MoMentalochka/HomeWork/payment/internal/config"
+	"github.com/MoMentalochka/HomeWork/platform/pkg/closer"
+	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
+	"go.uber.org/zap"
 )
 
-const grpcPort = 50052
+const configPath = "../../deploy/compose/payment/.env"
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+
+	if err := config.Load(configPath); err != nil {
+		log.Printf("failed to load config: %v", err)
 		return
 	}
 
-	service := paymentService.NewService()
-	api := paymentApi.NewApi(service)
-	grpcServer := grpc.NewServer()
+	appCtx, appCancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer appCancel()
+	defer gracefulShutdown()
 
-	reflection.Register(grpcServer)
+	closer.Configure(syscall.SIGINT, syscall.SIGTERM)
 
-	paymentV1.RegisterPaymentServiceServer(grpcServer, api)
+	a, err := app.New(appCtx)
+	if err != nil {
+		logger.Error(appCtx, "❌ Не удалось создать приложение", zap.Error(err))
+		return
+	}
 
-	go func() {
-		log.Printf("Payment server run on %d", grpcPort)
-		err := grpcServer.Serve(lis)
-		if err != nil {
-			log.Fatalf("failed to serve: %v", err)
-		}
-	}()
+	err = a.Run(appCtx)
+	if err != nil {
+		logger.Error(appCtx, "❌ Ошибка при работе приложения", zap.Error(err))
+		return
+	}
+}
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("🛑 Shutting down payment server...")
-	grpcServer.GracefulStop()
-	log.Println("✅ Payment server gracefully stopped")
+func gracefulShutdown() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := closer.CloseAll(ctx); err != nil {
+		logger.Error(ctx, "❌ Ошибка при завершении работы", zap.Error(err))
+	}
 }
