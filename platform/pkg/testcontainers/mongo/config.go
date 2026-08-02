@@ -6,7 +6,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"go.uber.org/zap"
 
-	"github.com/olezhek28/microservices-course-olezhek-solution/platform/pkg/logger"
+	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 )
 
 type Logger interface {

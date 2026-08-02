@@ -13,7 +13,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 	"go.uber.org/zap"
 
-	"github.com/olezhek28/microservices-course-olezhek-solution/platform/pkg/logger"
+	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 )
 
 const (
