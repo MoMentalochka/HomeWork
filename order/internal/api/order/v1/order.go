@@ -15,7 +15,7 @@ type orderApi struct {
 	orderService service.OrderService
 }
 
-func NewOrderApi(service service.OrderService) *orderApi {
+func NewOrderApi(service service.OrderService) ordersv1.Invoker {
 	return &orderApi{
 		orderService: service,
 	}
