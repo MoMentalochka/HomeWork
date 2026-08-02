@@ -15,6 +15,7 @@ type config struct {
 	Postgres  PostgresConfig
 	Payment   PaymentConfig
 	Inventory InventoryConfig
+	Logger    LoggerConfig
 }
 
 func Load(path string) error {
@@ -37,13 +38,17 @@ func Load(path string) error {
 		log.Println("failed to load order http config")
 		return err
 	}
+	loggerCfg, err := env.NewLoggerConfig()
+	if err != nil {
+		return err
+	}
 	paymentCfg, err := env.NewPaymentGrpcConfig()
 	if err != nil {
 		log.Println("failed to load order http config")
 		return err
 	}
 
-	appConfig = &config{Http: orderCfg, Postgres: postgresCfg, Payment: paymentCfg, Inventory: inventoryCfg}
+	appConfig = &config{Http: orderCfg, Postgres: postgresCfg, Payment: paymentCfg, Inventory: inventoryCfg, Logger: loggerCfg}
 
 	return nil
 }

@@ -121,7 +121,7 @@ func (d *diContainer) PaymentClient(_ context.Context) orderGRPC.PaymentClient {
 func (d *diContainer) InventoryClient(_ context.Context) orderGRPC.InventoryClient {
 	if d.inventoryClient == nil {
 		inventoryConn, err := grpc.NewClient(
-			config.AppConfig().Payment.Address(),
+			config.AppConfig().Inventory.Address(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		)
 		if err != nil {

@@ -22,10 +22,12 @@ func Load(path string) error {
 		log.Println("failed to load env file")
 		return err
 	}
+
 	loggerCfg, err := env.NewLoggerConfig()
 	if err != nil {
 		return err
 	}
+
 	mongoCfg, err := env.NewMongoConfig()
 	if err != nil {
 		log.Println("failed to load mongo config")

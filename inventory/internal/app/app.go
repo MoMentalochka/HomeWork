@@ -104,7 +104,6 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 	health.RegisterService(a.grpcServer)
 
 	inventory_v1.RegisterInventoryServiceServer(a.grpcServer, a.diContainer.InventoryV1API(ctx))
-
 	return nil
 }
 
