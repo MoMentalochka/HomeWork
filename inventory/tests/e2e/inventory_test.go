@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -11,8 +12,7 @@ import (
 	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
-var _ = Describe("UFOService", func() {
-
+var _ = Describe("InventoryService", func() {
 	var (
 		ctx             context.Context
 		cancel          context.CancelFunc
@@ -34,152 +34,202 @@ var _ = Describe("UFOService", func() {
 
 	AfterEach(func() {
 		// Чистим коллекцию после теста
-		err := env.ClearSightingsCollection(ctx)
-		Expect(err).ToNot(HaveOccurred(), "ожидали успешную очистку коллекции sightings")
+		err := env.ClearPartsCollection(ctx)
+		Expect(err).ToNot(HaveOccurred(), "ожидали успешную очистку коллекции parts")
 
 		cancel()
 	})
 
-	Describe("Get", func() {
+	Describe("GetPart", func() {
 		var partUUID string
 
 		BeforeEach(func() {
-			// Вставляем тестовое наблюдение
+			// Вставляем тестовую деталь
 			var err error
-			partUUID, err = env.InsertTestSighting(ctx)
+			partUUID, err = env.InsertTestPart(ctx)
 			Expect(err).ToNot(HaveOccurred(), "ожидали успешную вставку тестовой детали в MongoDB")
 		})
 
-		It("должен успешно возвращать наблюдение по UUID", func() {
+		It("должен успешно возвращать деталь по UUID", func() {
 			resp, err := inventoryClient.GetPart(ctx, &inventoryV1.GetPartRequest{
 				Uuid: partUUID,
 			})
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(resp.GetPart()).ToNot(BeNil())
-			//Expect(resp.GetSighting().Uuid).To(Equal(sightingUUID))
-			//Expect(resp.GetSighting().GetInfo()).ToNot(BeNil())
-			//Expect(resp.GetSighting().GetInfo().Location).ToNot(BeEmpty())
-			//Expect(resp.GetSighting().GetInfo().Description).ToNot(BeEmpty())
-			//Expect(resp.GetSighting().GetCreatedAt()).ToNot(BeNil())
+			Expect(resp.GetPart().Uuid).To(Equal(partUUID))
+			Expect(resp.GetPart().GetName()).ToNot(BeEmpty())
+			Expect(resp.GetPart().GetDescription()).ToNot(BeEmpty())
+			Expect(resp.GetPart().GetPrice()).To(BeNumerically(">", 0))
+			Expect(resp.GetPart().GetStockQuantity()).To(BeNumerically(">=", 0))
+			Expect(resp.GetPart().GetCategory()).ToNot(BeNil())
+			Expect(resp.GetPart().GetDimensions()).ToNot(BeNil())
+			Expect(resp.GetPart().GetManufacturer()).ToNot(BeNil())
+			Expect(resp.GetPart().GetCreatedAt()).ToNot(BeNil())
+		})
+
+		It("должен возвращать ошибку для несуществующего UUID", func() {
+			resp, err := inventoryClient.GetPart(ctx, &inventoryV1.GetPartRequest{
+				Uuid: "non-existent-uuid",
+			})
+
+			Expect(err).To(HaveOccurred())
+			Expect(resp).To(BeNil())
 		})
 	})
 
-	//Describe("Update", func() {
-	//	var sightingUUID string
-	//
-	//	BeforeEach(func() {
-	//		// Вставляем тестовое наблюдение
-	//		var err error
-	//		sightingUUID, err = env.InsertTestSighting(ctx)
-	//		Expect(err).ToNot(HaveOccurred(), "ожидали успешную вставку тестового наблюдения в MongoDB")
-	//	})
-	//
-	//	It("должен успешно обновлять наблюдение", func() {
-	//		updateInfo := env.GetUpdatedSightingInfo()
-	//
-	//		_, err := inventoryClient.Update(ctx, &inventoryV1.UpdateRequest{
-	//			Uuid:       sightingUUID,
-	//			UpdateInfo: updateInfo,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//
-	//		// Проверяем, что наблюдение действительно обновилось
-	//		resp, err := inventoryClient.Get(ctx, &inventoryV1.GetRequest{
-	//			Uuid: sightingUUID,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//		Expect(resp.GetSighting().GetInfo().Location).To(Equal(updateInfo.Location.GetValue()))
-	//		Expect(resp.GetSighting().GetInfo().Description).To(Equal(updateInfo.Description.GetValue()))
-	//		Expect(resp.GetSighting().GetInfo().Color.GetValue()).To(Equal(updateInfo.Color.GetValue()))
-	//		Expect(resp.GetSighting().GetInfo().DurationSeconds.GetValue()).To(Equal(updateInfo.DurationSeconds.GetValue()))
-	//		Expect(resp.GetSighting().GetUpdatedAt()).ToNot(BeNil())
-	//	})
-	//})
-	//
-	//Describe("Delete", func() {
-	//	var sightingUUID string
-	//
-	//	BeforeEach(func() {
-	//		// Вставляем тестовое наблюдение
-	//		var err error
-	//		sightingUUID, err = env.InsertTestSighting(ctx)
-	//		Expect(err).ToNot(HaveOccurred(), "ожидали успешную вставку тестового наблюдения в MongoDB")
-	//	})
-	//
-	//	It("должен успешно выполнять мягкое удаление наблюдения", func() {
-	//		_, err := inventoryClient.Delete(ctx, &inventoryV1.DeleteRequest{
-	//			Uuid: sightingUUID,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//
-	//		// Проверяем, что наблюдение помечено как удаленное
-	//		resp, err := inventoryClient.Get(ctx, &inventoryV1.GetRequest{
-	//			Uuid: sightingUUID,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//		Expect(resp.GetSighting().GetDeletedAt()).ToNot(BeNil())
-	//	})
-	//})
-	//
-	//Describe("Полный жизненный цикл", func() {
-	//	It("должен поддерживать полный CRUD цикл", func() {
-	//		// 1. Создаем наблюдение
-	//		info := env.GetTestSightingInfo()
-	//		createResp, err := inventoryClient.Create(ctx, &inventoryV1.CreateRequest{
-	//			Info: info,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//		Expect(createResp.GetUuid()).ToNot(BeEmpty())
-	//		uuid := createResp.GetUuid()
-	//
-	//		// 2. Получаем созданное наблюдение
-	//		getResp, err := inventoryClient.Get(ctx, &inventoryV1.GetRequest{
-	//			Uuid: uuid,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//		Expect(getResp.GetSighting().Uuid).To(Equal(uuid))
-	//		Expect(getResp.GetSighting().GetInfo().Location).To(Equal(info.Location))
-	//		Expect(getResp.GetSighting().GetInfo().Description).To(Equal(info.Description))
-	//
-	//		// 3. Обновляем наблюдение
-	//		updateInfo := env.GetUpdatedSightingInfo()
-	//		_, err = inventoryClient.Update(ctx, &inventoryV1.UpdateRequest{
-	//			Uuid:       uuid,
-	//			UpdateInfo: updateInfo,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//
-	//		// 4. Проверяем обновление
-	//		getUpdatedResp, err := inventoryClient.Get(ctx, &inventoryV1.GetRequest{
-	//			Uuid: uuid,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//		Expect(getUpdatedResp.GetSighting().GetInfo().Location).To(Equal(updateInfo.Location.GetValue()))
-	//		Expect(getUpdatedResp.GetSighting().GetInfo().Description).To(Equal(updateInfo.Description.GetValue()))
-	//
-	//		// 5. Удаляем наблюдение
-	//		_, err = inventoryClient.Delete(ctx, &inventoryV1.DeleteRequest{
-	//			Uuid: uuid,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//
-	//		// 6. Проверяем, что наблюдение помечено как удаленное
-	//		getDeletedResp, err := inventoryClient.Get(ctx, &inventoryV1.GetRequest{
-	//			Uuid: uuid,
-	//		})
-	//
-	//		Expect(err).ToNot(HaveOccurred())
-	//		Expect(getDeletedResp.GetSighting().GetDeletedAt()).ToNot(BeNil())
-	//	})
-	//})
+	Describe("ListParts", func() {
+		BeforeEach(func() {
+			// Вставляем несколько тестовых деталей
+			_, err := env.InsertTestPart(ctx)
+			Expect(err).ToNot(HaveOccurred())
+			_, err = env.InsertTestPart(ctx)
+			Expect(err).ToNot(HaveOccurred())
+			_, err = env.InsertTestPart(ctx)
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		It("должен успешно возвращать список всех деталей", func() {
+			resp, err := inventoryClient.ListParts(ctx, &inventoryV1.ListPartsRequest{
+				Filter: &inventoryV1.PartsFilter{},
+			})
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(resp.GetParts()).ToNot(BeNil())
+			Expect(resp.GetParts()).To(HaveLen(3))
+
+			// Проверяем, что каждая деталь имеет необходимые поля
+			for _, part := range resp.GetParts() {
+				Expect(part.GetUuid()).ToNot(BeEmpty())
+				Expect(part.GetName()).ToNot(BeEmpty())
+				Expect(part.GetDescription()).ToNot(BeEmpty())
+				Expect(part.GetPrice()).To(BeNumerically(">", 0))
+				Expect(part.GetStockQuantity()).To(BeNumerically(">=", 0))
+				Expect(part.GetCategory()).ToNot(BeNil())
+				Expect(part.GetDimensions()).ToNot(BeNil())
+				Expect(part.GetManufacturer()).ToNot(BeNil())
+			}
+		})
+
+		It("должен фильтровать детали по категории", func() {
+			resp, err := inventoryClient.ListParts(ctx, &inventoryV1.ListPartsRequest{
+				Filter: &inventoryV1.PartsFilter{
+					Categories: []inventoryV1.Category{inventoryV1.Category_CATEGORY_ENGINE},
+				},
+			})
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(resp.GetParts()).ToNot(BeNil())
+
+			// Проверяем, что все возвращенные детали имеют категорию ENGINE
+			for _, part := range resp.GetParts() {
+				Expect(part.GetCategory()).To(Equal(inventoryV1.Category_CATEGORY_ENGINE))
+			}
+		})
+
+		It("должен фильтровать детали по стране производителя", func() {
+			resp, err := inventoryClient.ListParts(ctx, &inventoryV1.ListPartsRequest{
+				Filter: &inventoryV1.PartsFilter{
+					ManufacturerCountries: []string{"Россия"},
+				},
+			})
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(resp.GetParts()).ToNot(BeNil())
+
+			// Проверяем, что все возвращенные детали произведены в России
+			for _, part := range resp.GetParts() {
+				Expect(part.GetManufacturer().GetCountry()).To(Equal("Россия"))
+			}
+		})
+
+		It("должен фильтровать детали по тегам", func() {
+			resp, err := inventoryClient.ListParts(ctx, &inventoryV1.ListPartsRequest{
+				Filter: &inventoryV1.PartsFilter{
+					Tags: []string{"двигатель"},
+				},
+			})
+			fmt.Println("должен фильтровать детали по тегам", resp.Parts)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(resp.GetParts()).ToNot(BeNil())
+
+			// Проверяем, что все возвращенные детали содержат тег "двигатель"
+			for _, part := range resp.GetParts() {
+				Expect(part.GetTags()).To(ContainElement("двигатель"))
+			}
+		})
+
+		It("должен возвращать пустой список для несуществующих фильтров", func() {
+			resp, err := inventoryClient.ListParts(ctx, &inventoryV1.ListPartsRequest{
+				Filter: &inventoryV1.PartsFilter{
+					Categories: []inventoryV1.Category{inventoryV1.Category_CATEGORY_UNKNOWN_UNSPECIFIED},
+				},
+			})
+			fmt.Println("должен возвращать пустой список для несуществующих фильтров", resp.Parts)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(resp.GetParts()).To(BeEmpty())
+		})
+	})
+
+	Describe("Полный жизненный цикл", func() {
+		It("должен поддерживать получение и фильтрацию деталей", func() {
+			// 1. Вставляем тестовую деталь с известными данными
+			testPart := env.GetTestPartInfo()
+			partUUID, err := env.InsertTestPartWithData(ctx, testPart)
+			Expect(err).ToNot(HaveOccurred())
+
+			// 2. Получаем деталь по UUID
+			getResp, err := inventoryClient.GetPart(ctx, &inventoryV1.GetPartRequest{
+				Uuid: partUUID,
+			})
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(getResp.GetPart().Uuid).To(Equal(partUUID))
+			Expect(getResp.GetPart().GetName()).To(Equal(testPart.GetName()))
+			Expect(getResp.GetPart().GetDescription()).To(Equal(testPart.GetDescription()))
+			Expect(getResp.GetPart().GetPrice()).To(Equal(testPart.GetPrice()))
+			Expect(getResp.GetPart().GetStockQuantity()).To(Equal(testPart.GetStockQuantity()))
+			Expect(getResp.GetPart().GetCategory()).To(Equal(testPart.GetCategory()))
+
+			// 3. Получаем список деталей с фильтром по категории
+			listResp, err := inventoryClient.ListParts(ctx, &inventoryV1.ListPartsRequest{
+				Filter: &inventoryV1.PartsFilter{
+					Categories: []inventoryV1.Category{inventoryV1.Category_CATEGORY_ENGINE},
+				},
+			})
+			fmt.Println(" Получаем список деталей с фильтром по категории", listResp.Parts)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(listResp.GetParts()).ToNot(BeEmpty())
+
+			// Проверяем, что наша деталь есть в списке
+			found := false
+			for _, part := range listResp.GetParts() {
+				if part.GetUuid() == partUUID {
+					found = true
+					break
+				}
+			}
+			Expect(found).To(BeTrue())
+
+			// 4. Получаем список деталей с фильтром по стране производителя
+			listByCountryResp, err := inventoryClient.ListParts(ctx, &inventoryV1.ListPartsRequest{
+				Filter: &inventoryV1.PartsFilter{
+					ManufacturerCountries: []string{"Россия"},
+				},
+			})
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(listByCountryResp.GetParts()).ToNot(BeEmpty())
+
+			// Проверяем, что наша деталь есть в списке
+			found = false
+			for _, part := range listByCountryResp.GetParts() {
+				if part.GetUuid() == partUUID {
+					found = true
+					break
+				}
+			}
+			Expect(found).To(BeTrue())
+		})
+	})
 })

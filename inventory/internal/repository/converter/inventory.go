@@ -2,10 +2,10 @@ package converter
 
 import (
 	"github.com/MoMentalochka/HomeWork/inventory/internal/model"
-	repomodel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
+	repoModel "github.com/MoMentalochka/HomeWork/inventory/internal/repository/model"
 )
 
-func PartToModel(part repomodel.Part) model.Part {
+func PartToModel(part repoModel.Part) model.Part {
 	var dimensions *model.Dimensions
 	if part.Dimensions != nil {
 		dimensions = PartDimensionsToModel(part.Dimensions)
@@ -22,7 +22,7 @@ func PartToModel(part repomodel.Part) model.Part {
 		Description:   part.Description,
 		Price:         part.Price,
 		StockQuantity: part.StockQuantity,
-		Category:      part.Category,
+		Category:      convertRepoCategoryToServiceCategory(part.Category),
 		Dimensions:    dimensions,
 		Manufacturer:  manufacturer,
 		Tags:          part.Tags,
@@ -32,7 +32,7 @@ func PartToModel(part repomodel.Part) model.Part {
 	}
 }
 
-func PartDimensionsToModel(dimensions *repomodel.Dimensions) *model.Dimensions {
+func PartDimensionsToModel(dimensions *repoModel.Dimensions) *model.Dimensions {
 	return &model.Dimensions{
 		Width:  dimensions.Width,
 		Height: dimensions.Height,
@@ -41,7 +41,7 @@ func PartDimensionsToModel(dimensions *repomodel.Dimensions) *model.Dimensions {
 	}
 }
 
-func PartManufacturerToModel(manufacturer *repomodel.Manufacturer) *model.Manufacturer {
+func PartManufacturerToModel(manufacturer *repoModel.Manufacturer) *model.Manufacturer {
 	return &model.Manufacturer{
 		Name:    manufacturer.Name,
 		Country: manufacturer.Country,
@@ -49,21 +49,53 @@ func PartManufacturerToModel(manufacturer *repomodel.Manufacturer) *model.Manufa
 	}
 }
 
-func ModelFiltersToRepoModelFilters(filters *model.PartsFilter) *repomodel.PartsFilter {
+func ModelFiltersToRepoModelFilters(filters *model.PartsFilter) *repoModel.PartsFilter {
 	if filters == nil {
-		return &repomodel.PartsFilter{}
+		return &repoModel.PartsFilter{}
 	}
-	var categories []string
+	var categories []repoModel.Category
 
 	if filters.Categories != nil {
-		categories = append(categories, filters.Categories...)
+		for _, category := range filters.Categories {
+			categories = append(categories, convertServiceCategoryToRepoCategory(category))
+		}
 	}
 
-	return &repomodel.PartsFilter{
+	return &repoModel.PartsFilter{
 		Uuids:                 filters.Uuids,
 		Names:                 filters.Names,
 		Categories:            categories,
 		ManufacturerCountries: filters.ManufacturerCountries,
 		Tags:                  filters.Tags,
+	}
+}
+
+func convertServiceCategoryToRepoCategory(serviceCategory model.Category) repoModel.Category {
+	switch serviceCategory {
+	case model.CategoryEngine:
+		return repoModel.CategoryEngine
+	case model.CategoryFuel:
+		return repoModel.CategoryFuel
+	case model.CategoryPorthole:
+		return repoModel.CategoryPorthole
+	case model.CategoryWing:
+		return repoModel.CategoryWing
+	default:
+		return repoModel.CategoryUnknown
+	}
+}
+
+func convertRepoCategoryToServiceCategory(repoCategory repoModel.Category) model.Category {
+	switch repoCategory {
+	case repoModel.CategoryEngine:
+		return model.CategoryEngine
+	case repoModel.CategoryFuel:
+		return model.CategoryFuel
+	case repoModel.CategoryPorthole:
+		return model.CategoryPorthole
+	case repoModel.CategoryWing:
+		return model.CategoryWing
+	default:
+		return model.CategoryUnknown
 	}
 }

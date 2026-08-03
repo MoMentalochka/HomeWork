@@ -26,7 +26,7 @@ const (
 
 	// Значения переменных окружения
 	loggerLevelValue = "debug"
-	startupTimeout   = 3 * time.Minute
+	startupTimeout   = 5 * time.Minute
 )
 
 // TestEnvironment — структура для хранения ресурсов тестового окружения

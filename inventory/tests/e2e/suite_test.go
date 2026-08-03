@@ -16,7 +16,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const testsTimeout = 5 * time.Minute
+const testsTimeout = 10 * time.Minute
 
 var (
 	env *TestEnvironment

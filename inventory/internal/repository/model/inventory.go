@@ -3,15 +3,22 @@ package model
 import (
 	"time"
 
-	"go.mongodb.org/mongo-driver/v2/bson"
-
 	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
+type Category string
+
+const (
+	CategoryUnknown  Category = "UNKNOWN"
+	CategoryEngine   Category = "ENGINE"
+	CategoryFuel     Category = "FUEL"
+	CategoryPorthole Category = "PORTHOLE"
+	CategoryWing     Category = "WING"
+)
+
 type Part struct {
-	Id bson.ObjectID `bson:"_id,omitempty"`
 	//  Уникальный идентификатор детали
-	Uuid string `bson:"uuid,omitempty"`
+	Uuid string `bson:"_id,omitempty"`
 	//  Название детали
 	Name string `bson:"name,omitempty"`
 	//  	Описание детали
@@ -21,7 +28,7 @@ type Part struct {
 	//  Количество на складе
 	StockQuantity int64 `bson:"stock_quantity"`
 	//  Категория
-	Category string `bson:"category"`
+	Category Category `bson:"category"`
 	//  Размеры детали
 	Dimensions *Dimensions `bson:"dimensions"`
 	//  Информация о производителе
@@ -42,7 +49,7 @@ type PartsFilter struct {
 	//  Список имён. Пусто — не фильтруем по имени
 	Names []string
 	//  Список категорий. Пусто — не фильтруем по категории
-	Categories []string
+	Categories []Category
 	//  Список стран производителей. Пусто — не фильтруем по стране
 	ManufacturerCountries []string
 	//  Список тегов. Пусто — не фильтруем по тегам

@@ -30,28 +30,43 @@ func NewRepository(client *mongo.Client) *repository {
 		Options: options.Index().SetUnique(false), // Индекс не уникальный, могут быть записи с одинаковым title
 	}
 
-	indexUuid := mongo.IndexModel{
-		Keys:    bson.D{{Key: "uuid", Value: 1}}, // 1 означает индекс по возрастанию, -1 был бы по убыванию
-		Options: options.Index().SetUnique(true), // Индекс не уникальный, могут быть записи с одинаковым title
-	}
-
 	ctx := context.Background()
-	_, err := repo.collection.Indexes().CreateMany(ctx, []mongo.IndexModel{indexName, indexUuid})
+	_, err := repo.collection.Indexes().CreateOne(ctx, indexName)
 	if err != nil {
 		log.Printf("Ошибка создания индекса: %v\n", err)
 		return &repo
 	}
+	//partUUID := gofakeit.UUID()
+	//now := time.Now()
 
-	// note1 := repomodel.Part{Uuid: "1", Price: 12.1, Name: "Product 1"}
-	// note2 := repomodel.Part{Uuid: "2", Price: 1.3, Name: "Product 2"}
+	//partDoc := bson.M{
+	//	"_id":            partUUID,
+	//	"name":           gofakeit.ProductName(),
+	//	"description":    gofakeit.Sentence(15),
+	//	"price":          gofakeit.Float64Range(1000, 500000),
+	//	"stock_quantity": int64(gofakeit.Number(1, 100)),
+	//	"category":       inventoryv1.Category_CATEGORY_WING.String(),
+	//	"dimensions": bson.M{
+	//		"length": gofakeit.Float64Range(10, 500),
+	//		"width":  gofakeit.Float64Range(10, 200),
+	//		"height": gofakeit.Float64Range(5, 100),
+	//		"weight": gofakeit.Float64Range(1, 1000),
+	//	},
+	//	"manufacturer": bson.M{
+	//		"name":    gofakeit.Company(),
+	//		"country": gofakeit.Country(),
+	//		"website": "https://" + gofakeit.DomainName(),
+	//	},
+	//	"tags":       []string{gofakeit.Word(), gofakeit.Word(), gofakeit.Word()},
+	//	"created_at": bson.NewDateTimeFromTime(now),
+	//	"updated_at": bson.NewDateTimeFromTime(now),
+	//}
 	//
-	// InsertOne вставляет один документ и возвращает его ID
-	// res, err := repo.collection.InsertMany(ctx, []any{note1, note2})
-	// log.Println(res)
-	// if err != nil {
+	//_, err = repo.collection.InsertOne(ctx, partDoc)
+	//if err != nil {
 	//	log.Printf("Ошибка вставки заметки: %v\n", err)
 	//	return &repo
-	// }
+	//}
 
 	return &repo
 }

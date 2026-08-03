@@ -6,9 +6,19 @@ import (
 	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
+type Category string
+
+const (
+	CategoryUnknown  Category = "UNKNOWN"
+	CategoryEngine   Category = "ENGINE"
+	CategoryFuel     Category = "FUEL"
+	CategoryPorthole Category = "PORTHOLE"
+	CategoryWing     Category = "WING"
+)
+
 type Part struct {
 	//  Уникальный идентификатор детали
-	Uuid string
+	Uuid string `bson:"_id,omitempty"`
 	//  Название детали
 	Name string
 	//  	Описание детали
@@ -18,7 +28,7 @@ type Part struct {
 	//  Количество на складе
 	StockQuantity int64
 	//  Категория
-	Category string
+	Category Category
 	//  Размеры детали
 	Dimensions *Dimensions
 	//  Информация о производителе
@@ -39,7 +49,7 @@ type PartsFilter struct {
 	//  Список имён. Пусто — не фильтруем по имени
 	Names []string
 	//  Список категорий. Пусто — не фильтруем по категории
-	Categories []string
+	Categories []Category
 	//  Список стран производителей. Пусто — не фильтруем по стране
 	ManufacturerCountries []string
 	//  Список тегов. Пусто — не фильтруем по тегам

@@ -2,25 +2,41 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
+	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 	"github.com/brianvoe/gofakeit/v7"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// InsertTestSighting — вставляет тестовуб деталь в коллекцию Mongo и возвращает её UUID
-func (env *TestEnvironment) InsertTestSighting(ctx context.Context) (string, error) {
-	pathUUID := gofakeit.UUID()
+func (env *TestEnvironment) InsertTestPart(ctx context.Context) (string, error) {
+	partUUID := gofakeit.UUID()
 	now := time.Now()
 
-	sightingDoc := bson.M{
-		"_id":            pathUUID,
-		"name":           gofakeit.Name(),
-		"price":          gofakeit.Float64(),
-		"stock_quantity": gofakeit.Int(),
-		"uuid":           pathUUID,
-		"created_at":     bson.NewDateTimeFromTime(now),
+	partDoc := bson.M{
+		"_id":            partUUID,
+		"name":           gofakeit.ProductName(),
+		"description":    gofakeit.Sentence(15),
+		"price":          gofakeit.Float64Range(1000, 500000),
+		"stock_quantity": int64(gofakeit.Number(1, 100)),
+		"category":       "ENGINE",
+		"dimensions": bson.M{
+			"length": gofakeit.Float64Range(10, 500),
+			"width":  gofakeit.Float64Range(10, 200),
+			"height": gofakeit.Float64Range(5, 100),
+			"weight": gofakeit.Float64Range(1, 1000),
+		},
+		"manufacturer": bson.M{
+			"name":    gofakeit.Company(),
+			"country": gofakeit.Country(),
+			"website": "https://" + gofakeit.DomainName(),
+		},
+		"tags":       []string{gofakeit.Word(), gofakeit.Word(), gofakeit.Word()},
+		"created_at": bson.NewDateTimeFromTime(now),
+		"updated_at": bson.NewDateTimeFromTime(now),
 	}
 
 	// Используем базу данных из переменной окружения MONGO_DATABASE
@@ -29,82 +45,117 @@ func (env *TestEnvironment) InsertTestSighting(ctx context.Context) (string, err
 		databaseName = "inventory-service" // fallback значение
 	}
 
-	_, err := env.Mongo.Client().Database(databaseName).Collection(inventoryCollectionName).InsertOne(ctx, sightingDoc)
+	_, err := env.Mongo.Client().Database(databaseName).Collection(partsCollectionName).InsertOne(ctx, partDoc)
 	if err != nil {
 		return "", err
 	}
 
-	return pathUUID, nil
+	return partUUID, nil
 }
 
-// // InsertTestSightingWithData — вставляет тестовое наблюдение НЛО с заданными данными
-//
-//	func (env *TestEnvironment) InsertTestSightingWithData(ctx context.Context, info *inventoryV1.SightingInfo) (string, error) {
-//		sightingUUID := gofakeit.UUID()
-//		now := time.Now()
-//
-//		observedAt := info.GetObservedAt().AsTime()
-//
-//		sightingDoc := bson.M{
-//			"_id": sightingUUID,
-//			"info": bson.M{
-//				"observed_at":      primitive.NewDateTimeFromTime(observedAt),
-//				"location":         info.GetLocation(),
-//				"description":      info.GetDescription(),
-//				"color":            info.GetColor().GetValue(),
-//				"sound":            info.GetSound().GetValue(),
-//				"duration_seconds": info.GetDurationSeconds().GetValue(),
-//			},
-//			"created_at": primitive.NewDateTimeFromTime(now),
-//		}
-//
-//		// Используем базу данных из переменной окружения MONGO_DATABASE
-//		databaseName := os.Getenv("MONGO_DATABASE")
-//		if databaseName == "" {
-//			databaseName = "inventory-service" // fallback значение
-//		}
-//
-//		_, err := env.Mongo.Client().Database(databaseName).Collection(inventoryCollectionName).InsertOne(ctx, sightingDoc)
-//		if err != nil {
-//			return "", err
-//		}
-//
-//		return sightingUUID, nil
-//	}
-//
-// // GetTestSightingInfo — возвращает тестовую информацию о наблюдении НЛО
-//
-//	func (env *TestEnvironment) GetTestSightingInfo() *inventoryV1.SightingInfo {
-//		return &inventoryV1.SightingInfo{
-//			ObservedAt:      timestamppb.New(time.Now().Add(-2 * time.Hour)),
-//			Location:        "Москва, Красная площадь",
-//			Description:     "Яркий светящийся объект треугольной формы",
-//			Color:           wrapperspb.String("зеленый"),
-//			Sound:           wrapperspb.Bool(false),
-//			DurationSeconds: wrapperspb.Int32(120),
-//		}
-//	}
-//
-// // GetUpdatedSightingInfo — возвращает обновленную информацию о наблюдении НЛО
-//
-//	func (env *TestEnvironment) GetUpdatedSightingInfo() *inventoryV1.SightingUpdateInfo {
-//		return &inventoryV1.SightingUpdateInfo{
-//			Location:        wrapperspb.String("Санкт-Петербург, Дворцовая площадь"),
-//			Description:     wrapperspb.String("Обновленное описание: объект изменил форму"),
-//			Color:           wrapperspb.String("синий"),
-//			DurationSeconds: wrapperspb.Int32(180),
-//		}
-//	}
-//
-// // ClearSightingsCollection — удаляет все записи из коллекции sightings
-func (env *TestEnvironment) ClearSightingsCollection(ctx context.Context) error {
+// InsertTestPartWithData — вставляет тестовую деталь с заданными данными
+func (env *TestEnvironment) InsertTestPartWithData(ctx context.Context, part *inventoryV1.Part) (string, error) {
+	partUUID := gofakeit.UUID()
+	now := time.Now()
+
+	partDoc := bson.M{
+		"_id":            partUUID,
+		"name":           part.GetName(),
+		"description":    part.GetDescription(),
+		"price":          part.GetPrice(),
+		"stock_quantity": part.GetStockQuantity(),
+		"category":       part.GetCategory().String(),
+		"dimensions": bson.M{
+			"length": part.GetDimensions().GetLength(),
+			"width":  part.GetDimensions().GetWidth(),
+			"height": part.GetDimensions().GetHeight(),
+			"weight": part.GetDimensions().GetWeight(),
+		},
+		"manufacturer": bson.M{
+			"name":    part.GetManufacturer().GetName(),
+			"country": part.GetManufacturer().GetCountry(),
+			"website": part.GetManufacturer().GetWebsite(),
+		},
+		"tags":       part.GetTags(),
+		"created_at": bson.NewDateTimeFromTime(now),
+		"updated_at": bson.NewDateTimeFromTime(now),
+	}
+
+	fmt.Println(partDoc.String())
+
 	// Используем базу данных из переменной окружения MONGO_DATABASE
 	databaseName := os.Getenv("MONGO_DATABASE")
 	if databaseName == "" {
 		databaseName = "inventory-service" // fallback значение
 	}
 
-	_, err := env.Mongo.Client().Database(databaseName).Collection(inventoryCollectionName).DeleteMany(ctx, bson.M{})
+	_, err := env.Mongo.Client().Database(databaseName).Collection(partsCollectionName).InsertOne(ctx, partDoc)
+	if err != nil {
+		return "", err
+	}
+
+	return partUUID, nil
+}
+
+// GetTestPartInfo — возвращает тестовую информацию о детали
+func (env *TestEnvironment) GetTestPartInfo() *inventoryV1.Part {
+	return &inventoryV1.Part{
+		Name:          "Ионный двигатель X-2000",
+		Description:   "Высокоэффективный ионный двигатель для межпланетных полетов",
+		Price:         150000.0,
+		StockQuantity: 5,
+		Category:      inventoryV1.Category_CATEGORY_ENGINE,
+		Dimensions: &inventoryV1.Dimensions{
+			Length: 120.0,
+			Width:  80.0,
+			Height: 60.0,
+			Weight: 250.0,
+		},
+		Manufacturer: &inventoryV1.Manufacturer{
+			Name:    "КосмоТех",
+			Country: "Россия",
+			Website: "https://cosmotech.ru",
+		},
+		Tags:      []string{"ионный", "двигатель", "межпланетный", "высокоэффективный"},
+		CreatedAt: timestamppb.New(time.Now().Add(-30 * 24 * time.Hour)),
+		UpdatedAt: timestamppb.New(time.Now()),
+	}
+}
+
+// GetUpdatedPartInfo — возвращает обновленную информацию о детали
+func (env *TestEnvironment) GetUpdatedPartInfo() *inventoryV1.Part {
+	return &inventoryV1.Part{
+		Name:          "Плазменный двигатель P-500",
+		Description:   "Мощный плазменный двигатель для тяжелых грузов",
+		Price:         200000.0,
+		StockQuantity: 3,
+		Category:      inventoryV1.Category_CATEGORY_ENGINE,
+		Dimensions: &inventoryV1.Dimensions{
+			Length: 150.0,
+			Width:  100.0,
+			Height: 80.0,
+			Weight: 400.0,
+		},
+		Manufacturer: &inventoryV1.Manufacturer{
+			Name:    "StarTech Industries",
+			Country: "США",
+			Website: "https://startech.com",
+		},
+		Tags:      []string{"плазменный", "двигатель", "тяжелый", "грузовой"},
+		CreatedAt: timestamppb.New(time.Now().Add(-45 * 24 * time.Hour)),
+		UpdatedAt: timestamppb.New(time.Now()),
+	}
+}
+
+// ClearPartsCollection — удаляет все записи из коллекции parts
+func (env *TestEnvironment) ClearPartsCollection(ctx context.Context) error {
+	// Используем базу данных из переменной окружения MONGO_DATABASE
+	databaseName := os.Getenv("MONGO_DATABASE")
+	if databaseName == "" {
+		databaseName = "inventory-service" // fallback значение
+	}
+
+	_, err := env.Mongo.Client().Database(databaseName).Collection(partsCollectionName).DeleteMany(ctx, bson.M{})
 	if err != nil {
 		return err
 	}

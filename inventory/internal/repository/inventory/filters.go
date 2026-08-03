@@ -24,7 +24,11 @@ func filteredParts(parts []*model.Part, filters *repomodel.PartsFilter) []*model
 	}
 
 	if len(filters.Categories) > 0 {
-		result = filterByCategory(result, filters.Categories)
+		var f []string
+		for _, category := range filters.Categories {
+			f = append(f, string(category))
+		}
+		result = filterByCategory(result, f)
 	}
 
 	if len(filters.ManufacturerCountries) > 0 {
@@ -73,7 +77,7 @@ func filterByCategory(parts []*model.Part, filters []string) []*model.Part {
 	allowedSet := makeSet(filters)
 
 	for _, part := range parts {
-		if _, ok := allowedSet[part.Category]; ok {
+		if _, ok := allowedSet[string(part.Category)]; ok {
 			result = append(result, part)
 		}
 	}
@@ -116,7 +120,6 @@ func isEmptyFilter(filter *repomodel.PartsFilter) bool {
 
 func bsonFilterFromPartsFilter(f *repomodel.PartsFilter) bson.M {
 	filter := bson.M{}
-
 	if len(f.Uuids) > 0 {
 		filter["uuid"] = bson.M{"$in": f.Uuids}
 	}

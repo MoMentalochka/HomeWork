@@ -5,5 +5,5 @@ const (
 	projectName = "inventory-service"
 
 	// sightingsCollectionName - имя коллекции MongoDB для деталей
-	inventoryCollectionName = "parts"
+	partsCollectionName = "parts"
 )

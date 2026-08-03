@@ -12,7 +12,7 @@ import (
 )
 
 func (r *repository) GetPart(ctx context.Context, uuid string) (repomodel.Part, error) {
-	res := r.collection.FindOne(ctx, bson.M{"uuid": uuid})
+	res := r.collection.FindOne(ctx, bson.M{"_id": uuid})
 	if res.Err() != nil {
 		if errors.Is(res.Err(), mongo.ErrNoDocuments) {
 			return repomodel.Part{}, model.ErrPartNotFound

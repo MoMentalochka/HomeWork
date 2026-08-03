@@ -3,7 +3,7 @@
 # ============================
 
 # Используем официальный образ Go на базе Alpine — лёгкий, быстрый и безопасный
-FROM golang:1.24.2-alpine AS builder
+FROM golang:1.26.5-alpine AS builder
 
 # Устанавливаем git — нужен для загрузки зависимостей из приватных и публичных репозиториев
 RUN apk add --no-cache git
@@ -62,6 +62,9 @@ COPY --from=builder /app/app-inventory .
 
 # Копируем бинарь grpc-health-probe в /bin
 COPY --from=builder /app/grpc-health-probe /bin/grpc-health-probe
+
+# Копируем .env файл для конфигурации приложения
+COPY deploy/compose/inventory/.env .env
 
 # Экспонируем порт gRPC-сервиса Inventory
 EXPOSE 50051
