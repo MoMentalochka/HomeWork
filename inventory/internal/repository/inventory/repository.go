@@ -19,7 +19,7 @@ type repository struct {
 	collection *mongo.Collection
 }
 
-func NewRepository(client *mongo.Client) *repository {
+func NewRepository(ctx context.Context, client *mongo.Client) *repository {
 	repo := repository{
 		client:     client,
 		collection: client.Database(databaseName).Collection(collectionName),
@@ -29,8 +29,6 @@ func NewRepository(client *mongo.Client) *repository {
 		Keys:    bson.D{{Key: "name", Value: 1}},  // 1 означает индекс по возрастанию, -1 был бы по убыванию
 		Options: options.Index().SetUnique(false), // Индекс не уникальный, могут быть записи с одинаковым title
 	}
-
-	ctx := context.Background()
 	_, err := repo.collection.Indexes().CreateOne(ctx, indexName)
 	if err != nil {
 		log.Printf("Ошибка создания индекса: %v\n", err)

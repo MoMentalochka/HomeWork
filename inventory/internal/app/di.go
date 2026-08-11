@@ -47,7 +47,7 @@ func (d *diContainer) InventoryService(ctx context.Context) service.InventorySer
 
 func (d *diContainer) InventoryRepository(ctx context.Context) repository.InventoryRepository {
 	if d.inventoryRepo == nil {
-		d.inventoryRepo = inventoryRepository.NewRepository(d.MongoDBClient(ctx))
+		d.inventoryRepo = inventoryRepository.NewRepository(ctx, d.MongoDBClient(ctx))
 	}
 	return d.inventoryRepo
 }
