@@ -2,7 +2,7 @@ package integration
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -82,7 +82,7 @@ func (env *TestEnvironment) InsertTestPartWithData(ctx context.Context, part *in
 		"updated_at": bson.NewDateTimeFromTime(now),
 	}
 
-	fmt.Println(partDoc.String())
+	log.Println(partDoc.String())
 
 	// Используем базу данных из переменной окружения MONGO_DATABASE
 	databaseName := os.Getenv("MONGO_DATABASE")

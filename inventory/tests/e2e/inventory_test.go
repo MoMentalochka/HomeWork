@@ -2,7 +2,7 @@ package integration
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -149,7 +149,7 @@ var _ = Describe("InventoryService", func() {
 					Tags: []string{"двигатель"},
 				},
 			})
-			fmt.Println("должен фильтровать детали по тегам", resp.Parts)
+			log.Println("должен фильтровать детали по тегам", resp.Parts)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(resp.GetParts()).ToNot(BeNil())
 
@@ -165,7 +165,7 @@ var _ = Describe("InventoryService", func() {
 					Categories: []inventoryV1.Category{inventoryV1.Category_CATEGORY_UNKNOWN_UNSPECIFIED},
 				},
 			})
-			fmt.Println("должен возвращать пустой список для несуществующих фильтров", resp.Parts)
+			log.Println("должен возвращать пустой список для несуществующих фильтров", resp.Parts)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(resp.GetParts()).To(BeEmpty())
 		})
@@ -197,7 +197,7 @@ var _ = Describe("InventoryService", func() {
 					Categories: []inventoryV1.Category{inventoryV1.Category_CATEGORY_ENGINE},
 				},
 			})
-			fmt.Println(" Получаем список деталей с фильтром по категории", listResp.Parts)
+			log.Println(" Получаем список деталей с фильтром по категории", listResp.Parts)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(listResp.GetParts()).ToNot(BeEmpty())
 

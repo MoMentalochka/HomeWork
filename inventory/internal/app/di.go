@@ -24,7 +24,6 @@ type diContainer struct {
 	inventoryRepo    repository.InventoryRepository
 
 	mongoDBClient *mongo.Client
-	mongoDBHandle *mongo.Database
 }
 
 func NewDiContainer() *diContainer {

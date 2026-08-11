@@ -39,7 +39,7 @@ func NewRepository(client *mongo.Client) *repository {
 	// partUUID := gofakeit.UUID()
 	// now := time.Now()
 
-	//partDoc := bson.M{
+	//	partDoc := bson.M{
 	//	"_id":            partUUID,
 	//	"name":           gofakeit.ProductName(),
 	//	"description":    gofakeit.Sentence(15),
@@ -62,11 +62,11 @@ func NewRepository(client *mongo.Client) *repository {
 	//	"updated_at": bson.NewDateTimeFromTime(now),
 	//}
 	//
-	//_, err = repo.collection.InsertOne(ctx, partDoc)
-	//if err != nil {
+	//	_, err = repo.collection.InsertOne(ctx, partDoc)
+	//	if err != nil {
 	//	log.Printf("Ошибка вставки заметки: %v\n", err)
 	//	return &repo
-	//}
+	//	}
 
 	return &repo
 }

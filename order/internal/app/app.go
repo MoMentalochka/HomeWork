@@ -97,7 +97,11 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	}
 	a.orderAPI = orderAPI
 
-	_ = a.initRouter(ctx)
+	err = a.initRouter(ctx)
+	if err != nil {
+		logger.Error(ctx, "ошибка создания router: %v", zap.Error(err))
+		return err
+	}
 
 	a.httpServer = &http.Server{
 		Addr:              config.AppConfig().Http.Address(),
@@ -123,7 +127,7 @@ func (a *App) runHTTPServer(ctx context.Context) error {
 
 	err := a.httpServer.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		logger.Error(ctx, fmt.Errorf("❌ Ошибка запуска сервера: %v", err).Error())
+		logger.Error(ctx, "❌ Ошибка запуска сервера:", zap.Error(err))
 	}
 	return nil
 }
