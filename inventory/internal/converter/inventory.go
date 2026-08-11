@@ -8,7 +8,6 @@ import (
 )
 
 func ModelToPart(part model.Part) *inventoryV1.Part {
-
 	var dimensions *inventoryV1.Dimensions
 	if part.Dimensions != nil {
 		dimensions = &inventoryV1.Dimensions{

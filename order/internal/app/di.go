@@ -5,6 +5,11 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	orderV1Api "github.com/MoMentalochka/HomeWork/order/internal/api/order/v1"
 	orderGRPC "github.com/MoMentalochka/HomeWork/order/internal/client/grpc"
 	inventoryClient "github.com/MoMentalochka/HomeWork/order/internal/client/grpc/inventory/v1"
@@ -19,10 +24,6 @@ import (
 	ordersV1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
 	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 	paymentv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/stdlib"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type diContainer struct {

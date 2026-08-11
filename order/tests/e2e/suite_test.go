@@ -8,9 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
+
+	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 )
 
 const testsTimeout = 5 * time.Minute

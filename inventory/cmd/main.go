@@ -7,11 +7,12 @@ import (
 	"syscall"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/MoMentalochka/HomeWork/inventory/internal/app"
 	"github.com/MoMentalochka/HomeWork/inventory/internal/config"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/closer"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
-	"go.uber.org/zap"
 )
 
 const configPath = ".env"
@@ -40,6 +41,7 @@ func main() {
 		return
 	}
 }
+
 func gracefulShutdown() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

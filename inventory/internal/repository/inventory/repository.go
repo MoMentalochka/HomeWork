@@ -36,8 +36,8 @@ func NewRepository(client *mongo.Client) *repository {
 		log.Printf("Ошибка создания индекса: %v\n", err)
 		return &repo
 	}
-	//partUUID := gofakeit.UUID()
-	//now := time.Now()
+	// partUUID := gofakeit.UUID()
+	// now := time.Now()
 
 	//partDoc := bson.M{
 	//	"_id":            partUUID,

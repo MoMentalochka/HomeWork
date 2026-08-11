@@ -17,6 +17,7 @@ type diContainer struct {
 func NewDiContainer() *diContainer {
 	return &diContainer{}
 }
+
 func (d *diContainer) PaymentV1API(ctx context.Context) paymentV1.PaymentServiceServer {
 	if d.paymentV1API == nil {
 		d.paymentV1API = paymentV1API.NewApi(d.PaymentService(ctx))

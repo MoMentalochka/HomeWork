@@ -5,13 +5,14 @@ import (
 	"os"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers/app"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers/mongo"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers/network"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers/path"
-	"go.uber.org/zap"
 )
 
 const (

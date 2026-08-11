@@ -6,10 +6,11 @@ import (
 	"os"
 	"time"
 
-	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 	"github.com/brianvoe/gofakeit/v7"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
 func (env *TestEnvironment) InsertTestPart(ctx context.Context) (string, error) {
