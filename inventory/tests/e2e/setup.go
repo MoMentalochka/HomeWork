@@ -5,15 +5,16 @@ import (
 	"os"
 	"time"
 
+	"github.com/docker/go-connections/nat"
+	"github.com/testcontainers/testcontainers-go/wait"
+	"go.uber.org/zap"
+
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers/app"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers/mongo"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers/network"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/testcontainers/path"
-	"github.com/docker/go-connections/nat"
-	"github.com/testcontainers/testcontainers-go/wait"
-	"go.uber.org/zap"
 )
 
 const (

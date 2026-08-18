@@ -6,14 +6,15 @@ import (
 	"fmt"
 	"net"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/reflection"
+
 	"github.com/MoMentalochka/HomeWork/payment/internal/config"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/closer"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/grpc/health"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 	paymentV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/reflection"
 )
 
 type App struct {
@@ -72,6 +73,7 @@ func (a *App) initCloser(_ context.Context) error {
 	closer.SetLogger(logger.Logger())
 	return nil
 }
+
 func (a *App) initListener(_ context.Context) error {
 	listener, err := net.Listen("tcp", config.AppConfig().PaymentGRPC.Address())
 	if err != nil {

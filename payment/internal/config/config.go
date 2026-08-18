@@ -3,8 +3,9 @@ package config
 import (
 	"log"
 
-	"github.com/MoMentalochka/HomeWork/payment/internal/config/env"
 	"github.com/joho/godotenv"
+
+	"github.com/MoMentalochka/HomeWork/payment/internal/config/env"
 )
 
 var appConfig *config

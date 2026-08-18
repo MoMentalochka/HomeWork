@@ -7,17 +7,17 @@ import (
 	"syscall"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/MoMentalochka/HomeWork/payment/internal/app"
 	"github.com/MoMentalochka/HomeWork/payment/internal/config"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/closer"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
-	"go.uber.org/zap"
 )
 
 const configPath = "../../deploy/compose/payment/.env"
 
 func main() {
-
 	if err := config.Load(configPath); err != nil {
 		log.Printf("failed to load config: %v", err)
 		return

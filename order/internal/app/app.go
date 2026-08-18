@@ -7,13 +7,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"go.uber.org/zap"
+
 	"github.com/MoMentalochka/HomeWork/order/internal/config"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/closer"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"go.uber.org/zap"
 )
 
 type App struct {
@@ -90,14 +91,17 @@ func (a *App) initRouter(_ context.Context) error {
 }
 
 func (a *App) initHTTPServer(ctx context.Context) error {
-
 	orderAPI, err := ordersv1.NewServer(a.diContainer.OrderV1API(ctx))
 	if err != nil {
 		logger.Error(ctx, "ошибка создания сервера OpenAPI: %v", zap.Error(err))
 	}
 	a.orderAPI = orderAPI
 
-	_ = a.initRouter(ctx)
+	err = a.initRouter(ctx)
+	if err != nil {
+		logger.Error(ctx, "ошибка создания router: %v", zap.Error(err))
+		return err
+	}
 
 	a.httpServer = &http.Server{
 		Addr:              config.AppConfig().Http.Address(),
@@ -123,7 +127,7 @@ func (a *App) runHTTPServer(ctx context.Context) error {
 
 	err := a.httpServer.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		logger.Error(ctx, fmt.Errorf("❌ Ошибка запуска сервера: %v", err).Error())
+		logger.Error(ctx, "❌ Ошибка запуска сервера:", zap.Error(err))
 	}
 	return nil
 }

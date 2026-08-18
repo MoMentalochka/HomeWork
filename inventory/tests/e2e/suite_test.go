@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/joho/godotenv"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"go.uber.org/zap"
 
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
-	"github.com/joho/godotenv"
-	"go.uber.org/zap"
 )
 
 const testsTimeout = 10 * time.Minute

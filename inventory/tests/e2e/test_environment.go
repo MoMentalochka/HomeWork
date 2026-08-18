@@ -2,14 +2,15 @@ package integration
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"os"
 	"time"
 
-	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 	"github.com/brianvoe/gofakeit/v7"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	inventoryV1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 )
 
 func (env *TestEnvironment) InsertTestPart(ctx context.Context) (string, error) {
@@ -81,7 +82,7 @@ func (env *TestEnvironment) InsertTestPartWithData(ctx context.Context, part *in
 		"updated_at": bson.NewDateTimeFromTime(now),
 	}
 
-	fmt.Println(partDoc.String())
+	log.Println(partDoc.String())
 
 	// Используем базу данных из переменной окружения MONGO_DATABASE
 	databaseName := os.Getenv("MONGO_DATABASE")
