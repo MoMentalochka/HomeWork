@@ -20,11 +20,11 @@ func (r *repository) GetPart(ctx context.Context, uuid string) (repomodel.Part, 
 		return repomodel.Part{}, res.Err()
 	}
 
-	var model repomodel.Part
-	err := res.Decode(&model)
+	var mod repomodel.Part
+	err := res.Decode(&mod)
 	if err != nil {
 		return repomodel.Part{}, err
 	}
 
-	return model, nil
+	return mod, nil
 }

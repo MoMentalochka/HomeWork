@@ -1,6 +1,6 @@
 module github.com/MoMentalochka/HomeWork/platform
 
-go 1.26.5
+go 1.26.6
 
 require (
 	github.com/docker/docker v28.2.2+incompatible

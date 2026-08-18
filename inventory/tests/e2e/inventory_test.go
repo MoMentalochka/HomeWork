@@ -197,7 +197,6 @@ var _ = Describe("InventoryService", func() {
 					Categories: []inventoryV1.Category{inventoryV1.Category_CATEGORY_ENGINE},
 				},
 			})
-			fmt.Println(" Получаем список деталей с фильтром по категории", listResp.Parts)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(listResp.GetParts()).ToNot(BeEmpty())
 
