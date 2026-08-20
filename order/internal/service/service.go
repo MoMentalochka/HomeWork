@@ -13,3 +13,7 @@ type OrderService interface {
 	OrderCancel(_ context.Context, uuid string) (ordersv1.OrderCancelRes, error)
 	OrderPay(ctx context.Context, method ordersv1.OptOrderPayRequest, uuid string) (ordersv1.OrderPayRes, error)
 }
+
+type OrderProducerService interface {
+	ProduceOrderPaid(ctx context.Context, event model.OrderPaidEvent) error
+}

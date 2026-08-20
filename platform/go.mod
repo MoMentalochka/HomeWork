@@ -10,6 +10,7 @@ require (
 	go.mongodb.org/mongo-driver/v2 v2.8.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.74.2
+	github.com/IBM/sarama v1.45.2
 )
 
 require (

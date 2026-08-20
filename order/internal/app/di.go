@@ -3,8 +3,12 @@ package app
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 
+	"github.com/IBM/sarama"
+	wrappedKafkaProducer "github.com/MoMentalochka/HomeWork/platform/pkg/kafka/producer"
+	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
 	"google.golang.org/grpc"
@@ -20,21 +24,30 @@ import (
 	orderRepository "github.com/MoMentalochka/HomeWork/order/internal/repository/order"
 	"github.com/MoMentalochka/HomeWork/order/internal/service"
 	orderService "github.com/MoMentalochka/HomeWork/order/internal/service/order"
+	orderProducer "github.com/MoMentalochka/HomeWork/order/internal/service/producer"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/closer"
 	ordersV1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
 	inventoryv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/inventory/v1"
 	paymentv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
+
+	wrappedKafka "github.com/MoMentalochka/HomeWork/platform/pkg/kafka"
 )
 
 type diContainer struct {
-	orderRepo    repository.OrderRepository
-	orderService service.OrderService
-	orderV1Api   ordersV1.Invoker
+	orderRepo repository.OrderRepository
+
+	orderService         service.OrderService
+	orderProducerService service.OrderProducerService
+
+	orderV1Api ordersV1.Invoker
 
 	inventoryClient orderGRPC.InventoryClient
 	paymentClient   orderGRPC.PaymentClient
 
 	postgresDB *sql.DB
+
+	syncProducer      sarama.SyncProducer
+	orderPaidProducer wrappedKafka.Producer
 }
 
 func NewDiContainer() *diContainer {
@@ -51,7 +64,7 @@ func (d *diContainer) OrderV1API(ctx context.Context) ordersV1.Invoker {
 
 func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
-		d.orderService = orderService.NewOrderService(d.OrderRepo(ctx), d.PaymentClient(ctx), d.InventoryClient(ctx))
+		d.orderService = orderService.NewOrderService(d.OrderRepo(ctx), d.PaymentClient(ctx), d.InventoryClient(ctx), d.OrderProducerService())
 	}
 
 	return d.orderService
@@ -136,4 +149,43 @@ func (d *diContainer) InventoryClient(_ context.Context) orderGRPC.InventoryClie
 	}
 
 	return d.inventoryClient
+}
+
+func (d *diContainer) OrderProducerService() service.OrderProducerService {
+	if d.orderProducerService == nil {
+		d.orderProducerService = orderProducer.NewService(d.OrderPaidProducer())
+	}
+
+	return d.orderProducerService
+}
+
+func (d *diContainer) OrderPaidProducer() wrappedKafka.Producer {
+	if d.orderPaidProducer == nil {
+		d.orderPaidProducer = wrappedKafkaProducer.NewProducer(
+			d.SyncProducer(),
+			config.AppConfig().OrderPaidProducer.Topic(),
+			logger.Logger(),
+		)
+	}
+
+	return d.orderPaidProducer
+}
+
+func (d *diContainer) SyncProducer() sarama.SyncProducer {
+	if d.syncProducer == nil {
+		p, err := sarama.NewSyncProducer(
+			config.AppConfig().Kafka.Brokers(),
+			config.AppConfig().OrderPaidProducer.Config(),
+		)
+		if err != nil {
+			panic(fmt.Sprintf("failed to create sync producer: %s\n", err.Error()))
+		}
+		closer.AddNamed("Kafka sync producer", func(ctx context.Context) error {
+			return p.Close()
+		})
+
+		d.syncProducer = p
+	}
+
+	return d.syncProducer
 }
