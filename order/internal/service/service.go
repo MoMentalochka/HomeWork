@@ -14,6 +14,10 @@ type OrderService interface {
 	OrderPay(ctx context.Context, method ordersv1.OptOrderPayRequest, uuid string) (ordersv1.OrderPayRes, error)
 }
 
-type OrderProducerService interface {
+type OrderPaidProducerService interface {
 	ProduceOrderPaid(ctx context.Context, event model.OrderPaidEvent) error
+}
+
+type OrderAssembledConsumerService interface {
+	RunConsumer(ctx context.Context) error
 }

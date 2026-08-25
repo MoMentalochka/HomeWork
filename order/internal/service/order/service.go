@@ -12,10 +12,10 @@ type orderService struct {
 	store           repository.OrderRepository
 	paymentClient   grpc.PaymentClient
 	inventoryClient grpc.InventoryClient
-	producerService service.OrderProducerService
+	producerService service.OrderPaidProducerService
 }
 
-func NewOrderService(rep repository.OrderRepository, paymentClient grpc.PaymentClient, inventoryClient grpc.InventoryClient, producerService service.OrderProducerService) *orderService {
+func NewOrderService(rep repository.OrderRepository, paymentClient grpc.PaymentClient, inventoryClient grpc.InventoryClient, producerService service.OrderPaidProducerService) *orderService {
 	return &orderService{
 		rep,
 		paymentClient,

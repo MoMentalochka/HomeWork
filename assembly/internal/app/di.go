@@ -23,15 +23,15 @@ import (
 
 type diContainer struct {
 	assemblyConsumerService service.OrderPaidConsumerService
+	orderPaidConsumer       wrappedKafka.Consumer
+
+	shipAssembledProducer   wrappedKafka.Producer
 	assemblyProducerService service.AssemblyProducerService
 
 	syncProducer  sarama.SyncProducer
 	consumerGroup sarama.ConsumerGroup
 
 	orderDecoder kafkaConverter.OrderPaidDecoder
-
-	orderPaidConsumer     wrappedKafka.Consumer
-	shipAssembledProducer wrappedKafka.Producer
 }
 
 func NewDiContainer() *diContainer {

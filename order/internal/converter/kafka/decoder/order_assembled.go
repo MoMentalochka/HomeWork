@@ -1,0 +1,29 @@
+package decoder
+
+import (
+	"fmt"
+
+	"github.com/MoMentalochka/HomeWork/order/internal/model"
+	events_v1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/events/v1"
+	"google.golang.org/protobuf/proto"
+)
+
+type decoder struct{}
+
+func NewOrderAssembledDecoder() *decoder {
+	return &decoder{}
+}
+
+func (d *decoder) Decode(data []byte) (model.OrderAssembledEvent, error) {
+	var pb events_v1.OrderAssembled
+	if err := proto.Unmarshal(data, &pb); err != nil {
+		return model.OrderAssembledEvent{}, fmt.Errorf("failed to unmarshal protobuf: %w", err)
+	}
+
+	return model.OrderAssembledEvent{
+		OrderUUID:    pb.GetOrderUuid(),
+		EventUUID:    pb.GetEventUuid(),
+		UserUUID:     pb.GetUserUuid(),
+		BuildTimeSec: pb.GetBuildTimeSec(),
+	}, nil
+}

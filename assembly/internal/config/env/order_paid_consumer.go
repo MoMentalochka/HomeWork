@@ -7,7 +7,7 @@ import (
 
 type OrderPaidConsumerEnvConfig struct {
 	TopicName string `env:"ORDER_PAID_TOPIC_NAME,required"`
-	GroupID   string `env:"ORDER_ASSEMBLED_CONSUMER_GROUP_ID,required"`
+	GroupID   string `env:"ORDER_PAID_CONSUMER_GROUP_ID,required"`
 }
 
 type OrderPaidConsumerConfig struct {

@@ -23,7 +23,7 @@ func NewService(shipAssembledProducer kafka.Producer) *service {
 
 func (p *service) ProduceShipAssembled(ctx context.Context, event model.ShipAssembledEvent) error {
 
-	msg := &events_v1.ShipAssembled{
+	msg := &events_v1.OrderAssembled{
 		OrderUuid:    event.OrderUUID,
 		EventUuid:    event.EventUUID,
 		UserUuid:     event.UserUUID,

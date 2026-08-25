@@ -7,8 +7,13 @@ import (
 	"log"
 
 	"github.com/IBM/sarama"
+	kafkaConverter "github.com/MoMentalochka/HomeWork/order/internal/converter/kafka"
+	"github.com/MoMentalochka/HomeWork/order/internal/converter/kafka/decoder"
+	assemblyConsumer "github.com/MoMentalochka/HomeWork/order/internal/service/consumer"
+	wrappedKafkaConsumer "github.com/MoMentalochka/HomeWork/platform/pkg/kafka/consumer"
 	wrappedKafkaProducer "github.com/MoMentalochka/HomeWork/platform/pkg/kafka/producer"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
+	kafkaMiddleware "github.com/MoMentalochka/HomeWork/platform/pkg/middleware/kafka"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
 	"google.golang.org/grpc"
@@ -36,8 +41,7 @@ import (
 type diContainer struct {
 	orderRepo repository.OrderRepository
 
-	orderService         service.OrderService
-	orderProducerService service.OrderProducerService
+	orderService service.OrderService
 
 	orderV1Api ordersV1.Invoker
 
@@ -46,8 +50,15 @@ type diContainer struct {
 
 	postgresDB *sql.DB
 
-	syncProducer      sarama.SyncProducer
-	orderPaidProducer wrappedKafka.Producer
+	orderAssembledDecoder kafkaConverter.OrderAssembledDecoder
+
+	consumerGroup                 sarama.ConsumerGroup
+	orderAssembledConsumer        wrappedKafka.Consumer
+	orderAssembledConsumerService service.OrderAssembledConsumerService
+
+	syncProducer         sarama.SyncProducer
+	orderPaidProducer    wrappedKafka.Producer
+	orderProducerService service.OrderPaidProducerService
 }
 
 func NewDiContainer() *diContainer {
@@ -64,7 +75,7 @@ func (d *diContainer) OrderV1API(ctx context.Context) ordersV1.Invoker {
 
 func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
-		d.orderService = orderService.NewOrderService(d.OrderRepo(ctx), d.PaymentClient(ctx), d.InventoryClient(ctx), d.OrderProducerService())
+		d.orderService = orderService.NewOrderService(d.OrderRepo(ctx), d.PaymentClient(ctx), d.InventoryClient(ctx), d.OrderPaidProducerService())
 	}
 
 	return d.orderService
@@ -151,7 +162,7 @@ func (d *diContainer) InventoryClient(_ context.Context) orderGRPC.InventoryClie
 	return d.inventoryClient
 }
 
-func (d *diContainer) OrderProducerService() service.OrderProducerService {
+func (d *diContainer) OrderPaidProducerService() service.OrderPaidProducerService {
 	if d.orderProducerService == nil {
 		d.orderProducerService = orderProducer.NewService(d.OrderPaidProducer())
 	}
@@ -188,4 +199,56 @@ func (d *diContainer) SyncProducer() sarama.SyncProducer {
 	}
 
 	return d.syncProducer
+}
+
+func (d *diContainer) OrderAssembledConsumerService(ctx context.Context) service.OrderAssembledConsumerService {
+	if d.orderAssembledConsumerService == nil {
+		d.orderAssembledConsumerService = assemblyConsumer.NewService(d.OrderAssembledConsumer(), d.OrderRepo(ctx), d.OrderDecoder())
+	}
+
+	return d.orderAssembledConsumerService
+}
+
+func (d *diContainer) OrderAssembledConsumer() wrappedKafka.Consumer {
+	if d.orderAssembledConsumer == nil {
+		d.orderAssembledConsumer = wrappedKafkaConsumer.NewConsumer(
+			d.ConsumerGroup(),
+			[]string{
+				config.AppConfig().OrderAssembledConsumer.Topic(),
+			},
+			logger.Logger(),
+			kafkaMiddleware.Logging(logger.Logger()),
+		)
+	}
+
+	return d.orderAssembledConsumer
+}
+
+func (d *diContainer) ConsumerGroup() sarama.ConsumerGroup {
+	//
+	if d.consumerGroup == nil {
+		consumerGroup, err := sarama.NewConsumerGroup(
+			config.AppConfig().Kafka.Brokers(),
+			config.AppConfig().OrderAssembledConsumer.GroupID(),
+			config.AppConfig().OrderAssembledConsumer.Config(),
+		)
+		if err != nil {
+			panic(fmt.Sprintf("failed to create consumer group: %s\n", err.Error()))
+		}
+		closer.AddNamed("Kafka consumer group", func(ctx context.Context) error {
+			return d.consumerGroup.Close()
+		})
+
+		d.consumerGroup = consumerGroup
+	}
+
+	return d.consumerGroup
+}
+
+func (d *diContainer) OrderDecoder() kafkaConverter.OrderAssembledDecoder {
+	if d.orderAssembledDecoder == nil {
+		d.orderAssembledDecoder = decoder.NewOrderAssembledDecoder()
+	}
+
+	return d.orderAssembledDecoder
 }

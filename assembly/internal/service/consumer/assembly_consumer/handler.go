@@ -29,7 +29,7 @@ func (s *service) OrderPaidHandler(ctx context.Context, msg kafka.Message) error
 	)
 
 	go func() {
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Second)
 		err = s.orderAssembleProducer.ProduceShipAssembled(ctx, model.ShipAssembledEvent{
 			OrderUUID:    event.OrderUUID,
 			UserUUID:     event.UserUUID,
