@@ -1,8 +1,8 @@
 package model
 
 type OrderPaidEvent struct {
-	OrderUUID       string
 	EventUUID       string
+	OrderUUID       string
 	UserUUID        string
 	PaymentMethod   string
 	TransactionUUID string

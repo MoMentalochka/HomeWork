@@ -2,12 +2,12 @@ package kafka
 
 import (
 	"context"
-
-	"github.com/MoMentalochka/HomeWork/platform/pkg/kafka/consumer"
 )
 
+type MessageHandler func(ctx context.Context, msg Message) error
+
 type Consumer interface {
-	Consume(ctx context.Context, handler consumer.MessageHandler) error
+	Consume(ctx context.Context, handler MessageHandler) error
 }
 
 type Producer interface {

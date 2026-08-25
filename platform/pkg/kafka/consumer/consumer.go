@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/IBM/sarama"
+	"github.com/MoMentalochka/HomeWork/platform/pkg/kafka"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -31,7 +32,7 @@ func NewConsumer(group sarama.ConsumerGroup, topics []string, logger Logger, mid
 }
 
 // Consume запускает консьюмер для списка топиков.
-func (c *consumer) Consume(ctx context.Context, handler MessageHandler) error {
+func (c *consumer) Consume(ctx context.Context, handler kafka.MessageHandler) error {
 	newGroupHandler := NewGroupHandler(handler, c.logger, c.middlewares...)
 
 	for {
