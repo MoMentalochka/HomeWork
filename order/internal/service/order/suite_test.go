@@ -8,6 +8,7 @@ import (
 
 	clientMocks "github.com/MoMentalochka/HomeWork/order/internal/client/grpc/mocks"
 	"github.com/MoMentalochka/HomeWork/order/internal/repository/mocks"
+	serviceMocks "github.com/MoMentalochka/HomeWork/order/internal/service/mocks"
 )
 
 type ServiceSuite struct {
@@ -19,7 +20,8 @@ type ServiceSuite struct {
 	paymentService   *clientMocks.PaymentClient
 	inventoryService *clientMocks.InventoryClient
 
-	orderService *orderService
+	orderService  *orderService
+	orderProducer *serviceMocks.OrderPaidProducerService
 }
 
 func (s *ServiceSuite) SetupTest() {
@@ -31,6 +33,7 @@ func (s *ServiceSuite) SetupTest() {
 		s.orderRepository,
 		s.paymentService,
 		s.inventoryService,
+		s.orderProducer,
 	)
 }
 

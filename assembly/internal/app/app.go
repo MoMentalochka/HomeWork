@@ -3,11 +3,12 @@ package app
 import (
 	"context"
 
+	"github.com/go-faster/errors"
+	"go.uber.org/zap"
+
 	"github.com/MoMentalochka/HomeWork/assembly/internal/config"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/closer"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
-	"github.com/go-faster/errors"
-	"go.uber.org/zap"
 )
 
 type App struct {

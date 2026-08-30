@@ -3,12 +3,13 @@ package producer
 import (
 	"context"
 
+	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
+
 	"github.com/MoMentalochka/HomeWork/order/internal/model"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/kafka"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 	events_v1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/events/v1"
-	"go.uber.org/zap"
-	"google.golang.org/protobuf/proto"
 )
 
 type service struct {
@@ -22,7 +23,6 @@ func NewService(orderRecordedProducer kafka.Producer) *service {
 }
 
 func (p *service) ProduceOrderPaid(ctx context.Context, event model.OrderPaidEvent) error {
-
 	msg := &events_v1.OrderPaid{
 		OrderUuid:       event.OrderUUID,
 		EventUuid:       event.EventUUID,

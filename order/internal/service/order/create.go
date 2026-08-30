@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/MoMentalochka/HomeWork/order/internal/converter"
 	"github.com/MoMentalochka/HomeWork/order/internal/model"
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
-	"github.com/google/uuid"
 )
 
 func (s *orderService) CreateNewOrder(ctx context.Context, req model.CreateOrderRequest) (*ordersv1.CreateOrderResponse, error) {

@@ -25,15 +25,15 @@ const (
 type PaymentMethod int32
 
 const (
-	//  Неизвестный способ
+	// Неизвестный способ
 	PaymentMethod_PAYMENT_METHOD_UNKNOWN_UNSPECIFIED PaymentMethod = 0
-	//  Банковская карта
+	// Банковская карта
 	PaymentMethod_PAYMENT_METHOD_CARD PaymentMethod = 1
-	//  Система быстрых платежей
+	// Система быстрых платежей
 	PaymentMethod_PAYMENT_METHOD_SBP PaymentMethod = 2
-	//  Кредитная карта
+	// Кредитная карта
 	PaymentMethod_PAYMENT_METHOD_CREDIT_CARD PaymentMethod = 3
-	//  Деньги инвестора (внутренний метод)
+	// Деньги инвестора (внутренний метод)
 	PaymentMethod_PAYMENT_METHOD_INVESTOR_MONEY PaymentMethod = 4
 )
 
@@ -85,11 +85,11 @@ func (PaymentMethod) EnumDescriptor() ([]byte, []int) {
 // Запрос оплаты
 type PayOrderRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	//  UUID Заказа
+	// UUID Заказа
 	OrderUuid string `protobuf:"bytes,1,opt,name=order_uuid,json=orderUuid,proto3" json:"order_uuid,omitempty"`
-	//  UUID пользователя который инициирует оплату
+	// UUID пользователя который инициирует оплату
 	UserUuid string `protobuf:"bytes,2,opt,name=user_uuid,json=userUuid,proto3" json:"user_uuid,omitempty"`
-	//  Выбранный способ оплаты
+	// Выбранный способ оплаты
 	PaymentMethod PaymentMethod `protobuf:"varint,3,opt,name=payment_method,json=paymentMethod,proto3,enum=payment.v1.PaymentMethod" json:"payment_method,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -149,7 +149,7 @@ func (x *PayOrderRequest) GetPaymentMethod() PaymentMethod {
 // Ответ оплаты
 type PayOrderResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	//  UUID транзакции оплаты
+	// UUID транзакции оплаты
 	TransactionUuid string `protobuf:"bytes,1,opt,name=transaction_uuid,json=transactionUuid,proto3" json:"transaction_uuid,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache

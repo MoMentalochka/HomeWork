@@ -37,7 +37,6 @@ func New(ctx context.Context) (*App, error) {
 }
 
 func (a *App) Run(ctx context.Context) error {
-
 	// Канал для ошибок от компонентов
 	errCh := make(chan error, 2)
 
@@ -163,6 +162,7 @@ func (a *App) runHTTPServer(ctx context.Context) error {
 	err := a.httpServer.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		logger.Error(ctx, "❌ Ошибка запуска сервера:", zap.Error(err))
+		return err
 	}
 	return nil
 }

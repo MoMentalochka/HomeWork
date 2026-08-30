@@ -29,9 +29,9 @@ const (
 //
 // InventoryService
 type InventoryServiceClient interface {
-	//  GetPart
+	// GetPart
 	GetPart(ctx context.Context, in *GetPartRequest, opts ...grpc.CallOption) (*GetPartResponse, error)
-	//ListParts
+	// ListParts
 	ListParts(ctx context.Context, in *ListPartsRequest, opts ...grpc.CallOption) (*ListPartsResponse, error)
 }
 
@@ -69,9 +69,9 @@ func (c *inventoryServiceClient) ListParts(ctx context.Context, in *ListPartsReq
 //
 // InventoryService
 type InventoryServiceServer interface {
-	//  GetPart
+	// GetPart
 	GetPart(context.Context, *GetPartRequest) (*GetPartResponse, error)
-	//ListParts
+	// ListParts
 	ListParts(context.Context, *ListPartsRequest) (*ListPartsResponse, error)
 	mustEmbedUnimplementedInventoryServiceServer()
 }

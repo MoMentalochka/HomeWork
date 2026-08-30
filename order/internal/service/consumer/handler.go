@@ -3,9 +3,10 @@ package assembly_consumer
 import (
 	"context"
 
+	"go.uber.org/zap"
+
 	"github.com/MoMentalochka/HomeWork/platform/pkg/kafka"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
-	"go.uber.org/zap"
 )
 
 func (s *service) OrderAssembledHandler(ctx context.Context, msg kafka.Message) error {
@@ -38,6 +39,7 @@ func (s *service) OrderAssembledHandler(ctx context.Context, msg kafka.Message) 
 	if order.Status == "PAID" {
 		order.Status = "COMPLETED"
 		err = s.repository.Update(event.OrderUUID, order)
+		return err
 	}
 
 	return nil

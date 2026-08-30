@@ -42,8 +42,8 @@ vars:
   ENVDIR: '{{.ROOT_DIR}}/deploy/env'
 
 
-  MODULES: order payment inventory
-  SERVICES: core,order,payment,inventory
+  MODULES: order payment inventory assembly
+  SERVICES: core,order,payment,inventory,assembly
 
 tasks:
   install-formatters:

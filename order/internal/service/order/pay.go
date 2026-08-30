@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/brianvoe/gofakeit/v7"
+
 	"github.com/MoMentalochka/HomeWork/order/internal/model"
 	ordersv1 "github.com/MoMentalochka/HomeWork/shared/pkg/openapi/order/v1"
 	paymentv1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/payment/v1"
-	"github.com/brianvoe/gofakeit/v7"
 )
 
 func (s *orderService) OrderPay(ctx context.Context, req ordersv1.OptOrderPayRequest, uuid string) (ordersv1.OrderPayRes, error) {

@@ -28,7 +28,6 @@ func NewService(orderPaidConsumer kafka.Consumer, orderAssembleProducer def.Asse
 }
 
 func (s *service) RunConsumer(ctx context.Context) error {
-
 	err := s.orderPaidConsumer.Consume(ctx, s.OrderPaidHandler)
 	if err != nil {
 		logger.Error(ctx, "Consume from order.paid topic error", zap.Error(err))

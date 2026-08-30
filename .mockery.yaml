@@ -31,3 +31,6 @@ packages:
   github.com/MoMentalochka/HomeWork/order/internal/client/grpc:
     config:
       include-regex: ".*Client"
+  github.com/MoMentalochka/HomeWork/assembly/internal/service:
+    config:
+      include-regex: ".*Service"

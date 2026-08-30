@@ -6,11 +6,12 @@ import (
 	"syscall"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/MoMentalochka/HomeWork/assembly/internal/app"
 	"github.com/MoMentalochka/HomeWork/assembly/internal/config"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/closer"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
-	"go.uber.org/zap"
 )
 
 const configPath = "../../deploy/compose/assembly/.env"

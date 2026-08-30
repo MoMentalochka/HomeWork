@@ -4,10 +4,11 @@ import (
 	"context"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/MoMentalochka/HomeWork/assembly/internal/model"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/kafka"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
-	"go.uber.org/zap"
 )
 
 func (s *service) OrderPaidHandler(ctx context.Context, msg kafka.Message) error {
@@ -29,7 +30,9 @@ func (s *service) OrderPaidHandler(ctx context.Context, msg kafka.Message) error
 	)
 
 	go func() {
-		time.Sleep(10 * time.Second)
+		timer := time.NewTimer(10 * time.Second)
+		<-timer.C
+
 		err = s.orderAssembleProducer.ProduceShipAssembled(ctx, model.ShipAssembledEvent{
 			OrderUUID:    event.OrderUUID,
 			UserUUID:     event.UserUUID,

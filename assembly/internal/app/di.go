@@ -5,19 +5,18 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
-	"github.com/MoMentalochka/HomeWork/assembly/internal/config"
-	wrappedKafkaProducer "github.com/MoMentalochka/HomeWork/platform/pkg/kafka/producer"
-	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 
+	"github.com/MoMentalochka/HomeWork/assembly/internal/config"
+	kafkaConverter "github.com/MoMentalochka/HomeWork/assembly/internal/converter/kafka"
 	"github.com/MoMentalochka/HomeWork/assembly/internal/converter/kafka/decoder"
 	"github.com/MoMentalochka/HomeWork/assembly/internal/service"
 	assemblyConsumer "github.com/MoMentalochka/HomeWork/assembly/internal/service/consumer/assembly_consumer"
 	assemblyProducer "github.com/MoMentalochka/HomeWork/assembly/internal/service/producer/assembly_producer"
 	"github.com/MoMentalochka/HomeWork/platform/pkg/closer"
-
-	kafkaConverter "github.com/MoMentalochka/HomeWork/assembly/internal/converter/kafka"
 	wrappedKafka "github.com/MoMentalochka/HomeWork/platform/pkg/kafka"
 	wrappedKafkaConsumer "github.com/MoMentalochka/HomeWork/platform/pkg/kafka/consumer"
+	wrappedKafkaProducer "github.com/MoMentalochka/HomeWork/platform/pkg/kafka/producer"
+	"github.com/MoMentalochka/HomeWork/platform/pkg/logger"
 	kafkaMiddleware "github.com/MoMentalochka/HomeWork/platform/pkg/middleware/kafka"
 )
 
@@ -37,6 +36,7 @@ type diContainer struct {
 func NewDiContainer() *diContainer {
 	return &diContainer{}
 }
+
 func (d *diContainer) AssemblyProducerService() service.AssemblyProducerService {
 	if d.assemblyProducerService == nil {
 		d.assemblyProducerService = assemblyProducer.NewService(d.ShipAssembledProducer())
@@ -44,6 +44,7 @@ func (d *diContainer) AssemblyProducerService() service.AssemblyProducerService 
 
 	return d.assemblyProducerService
 }
+
 func (d *diContainer) SyncProducer() sarama.SyncProducer {
 	if d.syncProducer == nil {
 		p, err := sarama.NewSyncProducer(

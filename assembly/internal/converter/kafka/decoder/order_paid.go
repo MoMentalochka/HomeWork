@@ -3,9 +3,10 @@ package decoder
 import (
 	"fmt"
 
+	"google.golang.org/protobuf/proto"
+
 	"github.com/MoMentalochka/HomeWork/assembly/internal/model"
 	events_v1 "github.com/MoMentalochka/HomeWork/shared/pkg/proto/events/v1"
-	"google.golang.org/protobuf/proto"
 )
 
 type decoder struct{}
