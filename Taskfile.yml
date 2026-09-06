@@ -42,8 +42,8 @@ vars:
   ENVDIR: '{{.ROOT_DIR}}/deploy/env'
 
 
-  MODULES: order payment inventory assembly
-  SERVICES: core,order,payment,inventory,assembly
+  MODULES: order payment inventory assembly iam
+  SERVICES: core,order,payment,inventory,assembly,iam
 
 tasks:
   install-formatters:
@@ -68,7 +68,6 @@ tasks:
     status:
       - test -x {{.GOFUMPT}}
       - test -x {{.GCI}}
-
   format:
     desc: "Форматирует весь проект gofumpt + gci, исключая mocks"
     summary: |
@@ -115,7 +114,6 @@ tasks:
         }
     status:
       - test -x {{.GOLANGCI_LINT}}
-
   lint:
     desc: "Запускает golangci-lint для всех модулей"
     summary: |
@@ -170,14 +168,12 @@ tasks:
     dir: shared/proto
     cmds:
       - '{{.BUF}} generate'
-
   proto:lint:
     deps: [ install-buf, proto:install-plugins ]
     desc: Проверка .proto-файлов на соответствие стилю
     dir: shared/proto
     cmds:
       - '{{.BUF}} lint'
-
   redocly-cli:install:
     desc: Установить локально Redocly CLI
     cmds:
@@ -192,13 +188,11 @@ tasks:
     deps: [ redocly-cli:install ]
     cmds:
       - '{{.REDOCLY}} bundle {{.OPEN_API_ORDER_V1_BASE}} -o {{.OPEN_API_ORDER_V1_BUNDLE}}'
-
   redocly-cli:bundle:
     desc: Собрать все схемы OpenAPI в общие файлы через локальный redocly
     deps: [ redocly-cli:install ]
     cmds:
       - task: redocly-cli:order-v1-bundle
-
   ogen:install:
     desc: "Скачивает ogen в папку bin"
     cmds:
@@ -336,7 +330,6 @@ tasks:
         }
     status:
       - test -x {{.MOCKERY}}
-
   mockery:gen:
     desc: "Генерирует моки интерфейсов с помощью mockery"
     deps: [ mockery:install ]
@@ -377,7 +370,6 @@ tasks:
         }
     status:
       - test -x {{.GRPCURL}}
-
   test-api-win:
     desc: "🧪 Запуск тестов для проверки API микросервисов"
     deps: [ grpcurl:install ]
@@ -769,36 +761,63 @@ tasks:
 
   up-core:
     dir: "deploy/compose/core"
-    cmd: "docker compose up --build -d"
+    cmds:
+      - echo "[task] 🚀 Поднимаем core контейнеры"
+      - docker compose up --build -d
   down-core:
     dir: "deploy/compose/core"
-    cmd: "docker compose down"
+    cmds:
+      - echo "[task] 🛑 Останавливаем core контейнеры"
+      - docker compose down --volumes
 
   up-order-db:
     dir: "./deploy/compose/order"
     deps: ["up-core"]
-    cmd: "docker compose up --build -d"
+    cmds:
+      - echo "[task] 📦 Поднимаем Order с зависимостями"
+      - docker compose up --build -d
   down-order-db:
     dir: "./deploy/compose/order"
-    cmd: "docker compose down"
+    cmds:
+      - echo "[task] 🛑 Останавливаем Order с зависимостями"
+      - docker compose down --volumes
+
+  up-iam:
+    desc: Поднять IAM сервис и все его зависимости
+    dir: "./deploy/compose/iam"
+    cmds:
+      - echo "[task] 🔐 Поднимаем IAM с зависимостями"
+      - docker compose up --build -d
+  down-iam:
+    desc: Остановить и удалить IAM сервис и все его зависимости
+    dir: "./deploy/compose/iam"
+    cmds:
+      - echo "[task] 🛑 Останавливаем IAM с зависимостями"
+      - docker compose down --volumes
 
   up-inventory-db:
     dir: "./deploy/compose/inventory"
     deps: ["up-core"]
-    cmd: "docker compose up --build -d"
+    cmds:
+      - echo "[task] 📦 Поднимаем Inventory с зависимостями"
+      - docker compose up --build -d
   down-inventory-db:
     dir: "./deploy/compose/inventory"
-    cmd: "docker compose down"
+    cmds:
+      - echo "[task] 🛑 Останавливаем Inventory с зависимостями"
+      - docker compose down --volumes
 
   up-app:
     cmds:
       - task up-order-db
       - task up-inventory-db
+      - task up-iam
   down-app:
     cmds:
       - task down-order-db
       - task down-inventory-db
       - task down-core
+      - task down-iam
   env:install-envsubst:
     desc: "Устанавливает envsubst в bin/"
     cmds:
