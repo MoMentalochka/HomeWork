@@ -1,9 +1,9 @@
-package iam_cache
+package session
 
 import "github.com/MoMentalochka/HomeWork/platform/pkg/cache"
 
 const (
-	cacheKeyPrefix = "ufo:sighting:"
+	cacheKeyPrefix = "auth:session:"
 )
 
 type repository struct {

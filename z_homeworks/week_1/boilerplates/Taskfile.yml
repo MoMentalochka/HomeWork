@@ -32,7 +32,7 @@ vars:
 
   OPEN_API_FILES: '{{.ROOT_DIR}}/shared/api/bundles'
 
-  MODULES: assembly order order payment platform iam notification
+  MODULES: assembly order order payment platform user notification
 
 tasks:
   install-formatters:

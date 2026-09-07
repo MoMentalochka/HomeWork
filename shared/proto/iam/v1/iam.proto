@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package iam.v1;
 
-option go_package = "github.com/MoMentalochka/HomeWork/iam/pkg/proto/iam/v1;iam_v1";
+option go_package = "github.com/MoMentalochka/HomeWork/user/pkg/proto/user/v1;iam_v1";
 
 // IamService
 service IamService {

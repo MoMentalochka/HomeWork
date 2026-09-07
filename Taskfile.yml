@@ -42,8 +42,8 @@ vars:
   ENVDIR: '{{.ROOT_DIR}}/deploy/env'
 
 
-  MODULES: order payment inventory assembly iam
-  SERVICES: core,order,payment,inventory,assembly,iam
+  MODULES: order payment inventory assembly user
+  SERVICES: core,order,payment,inventory,assembly,user
 
 tasks:
   install-formatters:
@@ -784,13 +784,14 @@ tasks:
 
   up-iam:
     desc: Поднять IAM сервис и все его зависимости
-    dir: "./deploy/compose/iam"
+    deps: ["up-core"]
+    dir: "./deploy/compose/user"
     cmds:
       - echo "[task] 🔐 Поднимаем IAM с зависимостями"
       - docker compose up --build -d
   down-iam:
     desc: Остановить и удалить IAM сервис и все его зависимости
-    dir: "./deploy/compose/iam"
+    dir: "./deploy/compose/user"
     cmds:
       - echo "[task] 🛑 Останавливаем IAM с зависимостями"
       - docker compose down --volumes
@@ -811,13 +812,13 @@ tasks:
     cmds:
       - task up-order-db
       - task up-inventory-db
-      - task up-iam
+      - task up-user
   down-app:
     cmds:
       - task down-order-db
       - task down-inventory-db
+      - task down-user
       - task down-core
-      - task down-iam
   env:install-envsubst:
     desc: "Устанавливает envsubst в bin/"
     cmds:

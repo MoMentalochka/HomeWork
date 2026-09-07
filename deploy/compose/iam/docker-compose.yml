@@ -2,7 +2,7 @@ services: # Раздел, в котором описываются все кон
 
   postgres-iam: # Сервис с PostgreSQL, используемый IAM-сервисом для хранения данных пользователей
     image: postgres:17.0-alpine3.20 # Используем официальный образ PostgreSQL 17 на базе Alpine — он лёгкий и быстрый
-    container_name: postgres-iam # Устанавливаем читаемое имя контейнера — удобно при отладке и работе в CLI
+    container_name: postgres-user # Устанавливаем читаемое имя контейнера — удобно при отладке и работе в CLI
 
     env_file:
       - .env
@@ -33,7 +33,7 @@ services: # Раздел, в котором описываются все кон
 
   redis-iam: # Redis — кэш и хранилище сессий для IAM
     image: redis:7.2.5-alpine3.20 # Лёгкий образ Redis последней стабильной версии
-    container_name: redis-iam # Явное имя контейнера Redis
+    container_name: redis-user # Явное имя контейнера Redis
 
     env_file:
       - .env
